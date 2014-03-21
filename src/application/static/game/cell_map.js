@@ -49,6 +49,13 @@ function Map(conf) {
 		return grid[i + j*h_size];
 	}
 	
+	this.fillWithColors = function(array) {
+		for (var i=0; i<grid.length; i++) {
+			array[i] = grid[i].col ? grid[i].col.valueOf() : -1;
+		}
+	}
+	
+	
 	// рисует ячейку в позиции i, j; если надо, пытается ей переопределить направление и цвет
 	function drawCell(cell, i, j, dir, col) {
 		if (!cell.draw) return;

@@ -14,6 +14,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/game/')
+def game():
+    return render_template('game.html')
+
+
 @socketio.on('join', namespace='/test')
 def join(message):
     join_room(message['room'])
@@ -42,4 +47,4 @@ def test_disconnect():
     print('Client disconnected')
 
 
-socketio.run(app)
+socketio.run(app, host='0.0.0.0')
