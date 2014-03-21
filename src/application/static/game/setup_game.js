@@ -54,22 +54,22 @@ document.body.appendChild(someWallImage);*/
 // не лучшая идея, потом надо будет поменять
 Cell.prototype.arrowImage = cellArrowImage;
 Cell.prototype.backImage = cellBackImage;
-Cell.prototype.image_width = theVeryGlobalUrlParams.iw || 16;
+Cell.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
 Cell.prototype.connectionImage = someConnectionImage;
-Cell.prototype.connection_image_width = (theVeryGlobalUrlParams.iw || 16)/2;
-Cell.prototype.connection_image_height = (theVeryGlobalUrlParams.iw || 16)/2;
+Cell.prototype.connection_image_width = (theVeryGlobalUrlParams.iw || 48)/2;
+Cell.prototype.connection_image_height = (theVeryGlobalUrlParams.iw || 48)/2;
 
 Wall.prototype.image = wallImage;
-Wall.prototype.image_width = theVeryGlobalUrlParams.iw || 16;
+Wall.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
 
 
 
 
 var map = new Map({
 	canvas: theGameCanvas,
-	h_size: theVeryGlobalUrlParams.w || 32,
-	v_size: theVeryGlobalUrlParams.h || 32,
-	cell_width: theVeryGlobalUrlParams.cw || 20,
+	h_size: theVeryGlobalUrlParams.w || 16,
+	v_size: theVeryGlobalUrlParams.h || 12,
+	cell_width: theVeryGlobalUrlParams.cw || 52,
 	generators: [
 		MapGenerator.cellRandom,
 		MapGenerator.dirMiddleSnake,
