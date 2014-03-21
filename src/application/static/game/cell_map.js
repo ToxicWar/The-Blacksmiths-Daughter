@@ -10,6 +10,7 @@ function Map(conf) {
 	var cell_width = conf.cell_width;
 	var scale = devicePixelRatio;
 	var onTurn = conf.onTurn;
+	var onAnimationEnd = conf.onAnimationEnd;
 	var playersColors = conf.playersColors;
 	//var playerColor = conf.playerColor;
 	
@@ -20,6 +21,11 @@ function Map(conf) {
 	Object.defineProperty(this, "cell_width", {
 		get: function() {return cell_width;}
 	});*/
+	
+	Object.defineProperties(this, {
+		"h_size": {get: function() {return h_size;}},
+		"v_size": {get: function() {return v_size;}}
+	});
 	
 	// начальные манипуляции с канвасом
 	this.resetCanvas = function() {
@@ -49,9 +55,14 @@ function Map(conf) {
 		return grid[i + j*h_size];
 	}
 	
-	this.fillWithColors = function(array) {
+	this.copyGridTo = function(array) {
 		for (var i=0; i<grid.length; i++) {
-			array[i] = grid[i].col ? grid[i].col.valueOf() : -1;
+			if (array[i] && grid[i] instanceof array[i].constructor) {
+				if (grid[i].col) array[i].col = grid[i].col;
+				if (grid[i].dir) array[i].dir = grid[i].dir;
+			} else {
+				array[i] = new grid[i].constructor(grid[i].dir, grid[i].col);
+			}
 		}
 	}
 	
@@ -101,9 +112,11 @@ function Map(conf) {
 	
 	// обновление всего по списку
 	var updatingCells = {};
+	var firedAnimationEnd = false;
 	// добавление в очередь на перерисовку; для и иже с ними
 	this.addUpdatingSomethingAt = function(i, j, obj) {
 		updatingCells[i + j*h_size] = obj;
+		firedAnimationEnd = false;
 	}
 	// что-то тут обновляется?
 	this.somethingUpdatesAt = function(i, j) {
@@ -117,6 +130,7 @@ function Map(conf) {
 	// апдейт всего того из очереди
 	this.update = function() {
 		var keys = Object.keys(updatingCells);
+		
 		for (var i=0; i<keys.length; i++) {
 			var ucell = updatingCells[keys[i]];
 			var pos = parseInt(keys[i]); // вынимаем координаты из ключа хешмапа
@@ -138,6 +152,11 @@ function Map(conf) {
 				nextCell.trigger(map, _i, _j, ucell.cell.col);
 			}
 		}
+		
+		if (keys.length == 0 && !firedAnimationEnd) {
+			onAnimationEnd(playersColors[0]);
+			firedAnimationEnd = true;
+		}
 	}
 	
 	// повернуть; для внутреннего (пока) использования
@@ -150,11 +169,13 @@ function Map(conf) {
 		rotateBy(x/cell_width|0, y/cell_width|0, delta);
 	}
 	
-	this.doTurn = function(x, y, delta, color) {
+	this.doTurnReal = function(x, y, delta, color) {
+		this.doTurn(x/cell_width|0, y/cell_width|0, delta, color);
+	}
+	
+	this.doTurn = function(i, j, delta, color) {
 		if (map.stillAnimating()) return false;
 		
-		var i = x/cell_width|0;
-		var j = y/cell_width|0;
 		var cell = grid[i + j*h_size];
 		
 		if (cell.col.valueOf() != color.valueOf()) return false;

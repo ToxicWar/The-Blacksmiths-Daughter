@@ -81,18 +81,27 @@ var map = new Map({
 	//playerColor: Color.GREEN,
 	onTurn: function(color) {
 		console.log("with #:", color.toString(), "as int:", color.valueOf());
+	},
+	onAnimationEnd: function(color) {console.log("anim. ended")
+		for (var i=0; i<bots.length; i++) {
+			if (bots[i].color.valueOf() != color.valueOf()) continue;
+			bots[i].turn(map);
+		}
 	}
 });
+
+var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
+var bots = [new TestAi(map, Color.RED)];
 
 theGameCanvas.onclick = function(e) {
 	//if (map.stillAnimating()) return;
 	//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
-	map.doTurn(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
+	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
 }
 theGameCanvas.oncontextmenu = function(e) {
 	e.preventDefault();
 	//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
-	map.doTurn(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
+	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
 }
 
 window.benchmark = false; // DEBUG

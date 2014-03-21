@@ -101,9 +101,9 @@ function RotatingCell(map, i, j, cell, dir_to) {
 	this.col = cell.col;
 }
 
-RotatingCell.prototype.update = function(map) {
+RotatingCell.prototype.update = function(map, fast) {
 	var d = this.dir_to - this.dir;
-	if (Math.abs(d) < 0.1) {
+	if (Math.abs(d) < 0.1 || fast) {
 		/*this.cell.dir = */this.dir = this.dir_to;
 		var lookDelta = this.cell.looksAt;
 		map.drawAt(this.i+lookDelta.i, this.j+lookDelta.j);
@@ -128,9 +128,9 @@ function FadingCell(cell, col_to) {
 	// генерить НОВЫЙ цвет на кажом кадре анимации.
 }
 
-FadingCell.prototype.update = function() {
+FadingCell.prototype.update = function(map, fast) {
 	this.a += 0.3;
-	if (this.a >= 1) {
+	if (this.a >= 1 || fast) {
 		this.cell.col = this.col = this.col_to;
 		return false;
 	}
