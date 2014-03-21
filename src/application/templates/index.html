@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Flask-SocketIO Test</title>
+    <meta charset='utf-8'>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script src="/static/game.js"></script>
+    <script>
+        $(document).ready(function(){
+            var ctx = document.getElementById('canvas').getContext('2d');
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+            socket.on('my response', function(msg) {
+                $('#log').append('<br>Received ' + msg.data);
+            });
+            socket.on('set coordinates', function(msg) {
+                ctx.fillStyle = msg.color;
+                var coordinates = msg.data.split(',');
+                ctx.fillRect (coordinates[0]*40, coordinates[1]*40, 38, 38);
+            });
+            $('#join_room').on('click', function(event) {
+                socket.emit('join', {room: $('#room').val()});
+                return false;
+            });
+            $('#leave_room').on('click', function(event) {
+                socket.emit('leave', {room: $('#room').val()});
+                return false;
+            });
+            $('#send_message').on('click', function(event) {
+                socket.emit('my room event', {room: $('#room').val(), data: $('#coordinates').val(), color: $('#color').val()});
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Flask-SocketIO Test</h1>
+    <form id="join" method='POST' action='#'>
+        <input type="text" name="room" id="room" placeholder="Имя комнаты">
+        <input id='join_room' type="button" value="Войти в комнату">
+        <input id='leave_room' type="button" value="Выйти из комнаты">
+    </form>
+    <form id="send_room" method='POST' action='#'>
+        <input type="text" name="coordinates" id="coordinates" placeholder="Координаты">
+        <input type="text" name="color" id="color" placeholder="Цвет">
+        <input id='send_message' type="button" value="Отправить">
+    </form>
+
+    <h2></h2>
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <h2>Receive:</h2>
+    <div id="log"></div>
+</body>
+</html>
