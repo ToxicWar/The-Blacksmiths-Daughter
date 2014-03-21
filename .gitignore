@@ -2,3 +2,4 @@ lib
 .cordova
 *.pyc
 *.pyo
+*~
