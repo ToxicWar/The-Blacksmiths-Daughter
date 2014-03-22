@@ -2,6 +2,15 @@ function setupGame() {
 
 
 
+function log(text) {div_log.innerHTML = text+"</br>"+div_log.innerHTML;}
+window.onerror = function(errorMsg, url, lineNumber) {
+	var msg = "Error happened on <"+url+
+		"\n> on line "+lineNumber+":\n"+
+		errorMsg;
+	alert(msg);
+}
+
+
 // можно подгружать, можно генерить. не суть.
 /*var someCellImage = document.createElement("canvas");
 var w = theVeryGlobalUrlParams.iw || 16;
@@ -114,6 +123,11 @@ if (gameConf.multiplayer) {
 			}
 		}
 	});
+	
+	socket.on('turn event', function(msg) {
+		console.log(msg)
+		map.doTurn(msg.pos.i, msg.pos.j, 1, map.cellAt(msg.pos.i, msg.pos.j));
+	});
 } else {
 	setupMap();
 }
@@ -144,8 +158,14 @@ function setupMap(mapData, playerColor) {
 		//playersPositionsGenerator: MapGenerator.playersPositions,
 		playersColors: [Color.GREEN, Color.RED],
 		//playerColor: Color.GREEN,
-		onTurn: function(color) {
+		onTurn: function(i, j, color) {
 			console.log("with #:", color.toString(), "as int:", color.valueOf());
+			
+			if (gameConf.multiplayer) {
+				socket.emit('turn event', {
+					pos: {i:i, j:j}
+				});
+			}
 		},
 		onAnimationEnd: function(color) {
 			if (gameConf.multiplayer) return;
@@ -156,7 +176,8 @@ function setupMap(mapData, playerColor) {
 		}
 	});
 	
-	playerColor = playerColor || Color.GREEN; // а это тоже наверно должно идти от сервера
+	playerColor = playerColor || Color.GREEN;
+	console.log(playerColor)
 	var bots = [new TestAi(map, Color.RED)];
 	
 	
@@ -174,18 +195,22 @@ function setupMap(mapData, playerColor) {
 		grab_y = y;
 	}
 	function drop() {
-		if (grab_len < 5)
-			map.doTurnReal(grab_x, grab_y, 1, Color.GREEN);
+		//alert([grab_x, grab_y, 1, Color.GREEN])
+		if (grab_len < 5) {
+			map.doTurnReal(grab_x, grab_y, 1, playerColor);
+		}
 	}
 	
 	
 	theGameCanvas.onmousedown = function(e) {
 		e.preventDefault();
-		grab(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		var pos = getPos(theGameCanvas);
+		grab(e.pageX-pos.x, e.pageY-pos.y);
 	}
 	theGameCanvas.onmousemove = function(e) {
 		e.preventDefault();
-		move(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		var pos = getPos(theGameCanvas);
+		move(e.pageX-pos.x, e.pageY-pos.y);
 	}
 	theGameCanvas.onmouseup = function(e) {
 		e.preventDefault();
@@ -195,12 +220,14 @@ function setupMap(mapData, playerColor) {
 	theGameCanvas.ontouchstart = function(e) {
 		e.preventDefault();
 		e = e.touches[0];
-		grab(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		var pos = getPos(theGameCanvas);
+		grab(e.pageX-pos.x, e.pageY-pos.y);
 	}
 	theGameCanvas.ontouchmove = function(e) {
 		e.preventDefault();
 		e = e.touches[0];
-		move(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		var pos = getPos(theGameCanvas);
+		move(e.pageX-pos.x, e.pageY-pos.y);
 	}
 	theGameCanvas.ontouchend = function(e) {
 		e.preventDefault();

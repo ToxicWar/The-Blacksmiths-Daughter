@@ -86,6 +86,11 @@ def get_multiplayer_map(message):
         _map = app.multiplayer_map
     emit('get multiplayer map', {'map': _map})
 
+#used
+@socketio.on('turn event', namespace='/test')
+def get_multiplayer_map(message):
+    emit('turn event', {'pos': message['pos']})
+
 
 @socketio.on('connect', namespace='/test')
 def test_connect():

@@ -190,12 +190,12 @@ function Map(conf) {
 		
 		var cell = grid[i + j*h_size];
 		
-		if (cell.col.valueOf() != color.valueOf()) return false;
+		if (!cell.col || cell.col.valueOf() != color.valueOf()) return false;
 		if (playersColors[0].valueOf() != color.valueOf()) return false;
 		
 		cell.rotate(map, i, j, (cell.dir+4+delta)%4);
 		playersColors.push(playersColors.shift());
-		onTurn(playersColors[0]);
+		onTurn(i, j, playersColors[0]);
 		
 		return true;
 	}
