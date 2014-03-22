@@ -10,7 +10,9 @@ app.config['SECRET_KEY'] = 'eb23cd1e-35e4-4fed-b4e1-7e912d59598f'
 socketio = SocketIO(app)
 
 backgrounds = ['1', '2', '3']
-multiplayer_map = ""
+with app.app_context():
+    app.multiplayer_map = ''
+
 
 def generate_map(x, y):
     _map = []
@@ -72,13 +74,17 @@ def send_room_message(message):
 #used
 @socketio.on('set multiplayer map', namespace='/test')
 def set_multiplayer_map(message):
-    multiplayer_map = message['map']
-    print multiplayer_map
+    with app.app_context():
+        app.multiplayer_map = message['map']
+        print app.multiplayer_map
 
 #used
 @socketio.on('get multiplayer event', namespace='/test')
 def get_multiplayer_map(message):
-    emit('get multiplayer map', {'map': multiplayer_map})
+    _map = ''
+    with app.app_context():
+        _map = app.multiplayer_map
+    emit('get multiplayer map', {'map': _map})
 
 
 @socketio.on('connect', namespace='/test')
