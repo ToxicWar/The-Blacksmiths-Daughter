@@ -81,7 +81,7 @@ if (gameConf.multiplayer) {
 //		]);
 //	});
 	
-	socket.emit('get multiplayer event', {room: room});
+	socket.emit('get multiplayer event', {});
 	
 	socket.on('get multiplayer map', function(msg) {
 		console.log(msg)
@@ -91,7 +91,7 @@ if (gameConf.multiplayer) {
 				MapGenerator.playersPositions,
 				[Color.GREEN, Color.RED],
 				function(positions) {console.log(map.packGrig())
-					socket.emit('set multiplayer map', {room: room, map: map.packGrig(), positions: positions});
+					socket.emit('set multiplayer map', {map: map.packGrig(), positions: positions});
 				}
 			]);
 		} else {
@@ -137,19 +137,51 @@ function setupMap(mapData) {
 			}
 		}
 	});
-
+	
 	var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
 	var bots = [new TestAi(map, Color.RED)];
-
-	theGameCanvas.onclick = function(e) {
+	
+	
+	var grab_x = NaN, grab_y = NaN;
+	function grab(x,y) {
 		//if (map.stillAnimating()) return;
 		//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
-		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
+		
 	}
-	theGameCanvas.oncontextmenu = function(e) {
+	function move(x,y) {
+		
+	}
+	function drop() {
+		map.doTurnReal(grab_x, grab_y, 1, Color.GREEN);
+	}
+	
+	
+	theGameCanvas.onmousedown = function(e) {
 		e.preventDefault();
-		//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
-		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
+		grab(e.offsetX||e.layerX, e.offsetY||e.layerY);
+	}
+	theGameCanvas.onmousemove = function(e) {
+		e.preventDefault();
+		move(e.offsetX||e.layerX, e.offsetY||e.layerY);
+	}
+	theGameCanvas.onmouseup = function(e) {
+		e.preventDefault();
+		drop();
+	}
+	
+	theGameCanvas.ontouchstart = function(e) {
+		e.preventDefault();
+		e = e.touches[0];
+		grab(e.offsetX||e.layerX, e.offsetY||e.layerY);
+	}
+	theGameCanvas.ontouchmove = function(e) {
+		e.preventDefault();
+		e = e.touches[0];
+		move(e.offsetX||e.layerX, e.offsetY||e.layerY);
+	}
+	theGameCanvas.ontouchend = function(e) {
+		e.preventDefault();
+		drop();
 	}
 
 	window.benchmark = false; // DEBUG
