@@ -17,3 +17,10 @@ function getPos(obj) {
 		} while (obj = obj.offsetParent);
 	return {x: curleft, y: curtop};
 }
+
+function toRangeOrMiddle(a, x ,b) {
+	if (b < a) return (a+b)/2;
+	if (x < a) return a;
+	if (x > b) return b;
+	return x;
+}
