@@ -3,3 +3,4 @@ lib
 *.pyc
 *.pyo
 *~
+tizen/tizen.wgt
