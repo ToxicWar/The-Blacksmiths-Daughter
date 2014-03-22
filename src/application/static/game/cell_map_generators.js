@@ -14,9 +14,11 @@ MapGenerator.unpackGrid = function(grid, h_size, v_size, data) {
 	var objByString = {};
 	var objs = [Cell, Wall, Hole];
 	
-	for (var i=0; i<objs.length; i++)
-		for (var j=0; j<objs[i].strings.length; j++)
-			objByString[objByString[i].strings[j]] = objs[i];
+	for (var i=0; i<objs.length; i++) {
+		for (var j=0; j<objs[i].prototype.strings.length; j++) {
+			objByString[objs[i].prototype.strings[j]] = objs[i];
+		}
+	}
 	
 	for (var i=0; i<data.length; i++) {
 		grid[i] = objByString[data[i]].fromString(data[i]);

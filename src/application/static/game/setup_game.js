@@ -90,15 +90,24 @@ if (gameConf.multiplayer) {
 			map.applyGenerator([
 				MapGenerator.playersPositions,
 				[Color.GREEN, Color.RED],
-				function(positions) {console.log(map.packGrig())
-					socket.emit('set multiplayer map', {map: map.packGrig(), positions: positions});
+				function(positions) {
+					for (var i=0; i<positions.length; i++) {
+						positions[i].col = positions[i].col.toString()
+					}
+					socket.emit('set multiplayer map', {
+						map: {
+							data: map.packGrig(),
+							positions: positions
+						}
+					});
 				}
 			]);
 		} else {
-			setupMap(msg.map);
-			for (var i=0; i<msg.positions.length; i++) {
-				var pos = msg.positions;
-				map.hackColor(pos.i, pos.j, pos.col);
+			setupMap(msg.map.data);
+			for (var i=0; i<msg.map.positions.length; i++) {
+				var pos = msg.map.positions[i];
+				console.log(pos.col, Color.fromHTML(pos.col))
+				map.hackColor(pos.i, pos.j, Color.fromHTML(pos.col));
 			}
 		}
 	});

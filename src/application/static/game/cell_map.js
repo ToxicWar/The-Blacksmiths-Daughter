@@ -201,13 +201,13 @@ function Map(conf) {
 	}
 	
 	// для тестирования
-	this.hackColor = function(i, j) {
-		grid[i + j*h_size].col = Color.GREEN;
+	this.hackColor = function(i, j, col) {
+		grid[i + j*h_size].col = col;
 		drawCell(grid[i + j*h_size], i, j);
 	}
-	this.hackColorReal = function(x, y) {
+	this.hackColorReal = function(x, y, col) {
 		var i=x/cell_width|0, j=y/cell_width|0;
-		this.hackColor(i, j);
+		this.hackColor(i, j, col);
 	}
 	
 	
