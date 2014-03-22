@@ -12,13 +12,11 @@ socketio = SocketIO(app)
 backgrounds = ['1', '2', '3']
 
 def generate_map(x, y):
-    map = []
+    _map = []
     for i in xrange(x):
-        _map = []
         for j in xrange(y):
             _map.append(random.randint(0, 3))
-        map.append(_map)
-    return json.dumps(map)
+    return _map
 
 
 @app.route('/')
