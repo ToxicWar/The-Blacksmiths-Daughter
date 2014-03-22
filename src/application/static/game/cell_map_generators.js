@@ -5,6 +5,11 @@ MapGenerator.cellRandom = function(grid, h_size, v_size) {
 		grid[i] = new Cell(Math.random()*4|0, Color.GRAY);
 }
 
+MapGenerator.dirByArray = function(grid, h_size, v_size, arr) {
+	for (var i=0; i<arr.length; i++)
+			grid[i].dir = arr[i];
+}
+
 MapGenerator.dirMiddleSnake = function(grid, h_size, v_size) {
 	var i_from = h_size/4|0, i_to = h_size*3/4;
 	for (var i=i_from; i<i_to; i++) {

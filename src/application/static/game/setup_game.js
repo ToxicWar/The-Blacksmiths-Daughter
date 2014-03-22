@@ -64,57 +64,63 @@ Wall.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
 
 
 
-
-var map = new Map({
-	canvas: theGameCanvas,
-	h_size: theVeryGlobalUrlParams.w || 16,
-	v_size: theVeryGlobalUrlParams.h || 12,
-	cell_width: theVeryGlobalUrlParams.cw || 52,
-	generators: [
-		MapGenerator.cellRandom,
-		MapGenerator.dirMiddleSnake,
-		MapGenerator.wallBorder,
-		[MapGenerator.hole, true, 0.75, 0.25, 0.15]
-	],
-	playersPositionsGenerator: MapGenerator.playersPositions,
-	playersColors: [Color.GREEN, Color.RED],
-	//playerColor: Color.GREEN,
-	onTurn: function(color) {
-		console.log("with #:", color.toString(), "as int:", color.valueOf());
-	},
-	onAnimationEnd: function(color) {console.log("anim. ended")
-		for (var i=0; i<bots.length; i++) {
-			if (bots[i].color.valueOf() != color.valueOf()) continue;
-			bots[i].turn(map);
-		}
-	}
-});
-
-var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
-var bots = [new TestAi(map, Color.RED)];
-
-theGameCanvas.onclick = function(e) {
-	//if (map.stillAnimating()) return;
-	//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
-	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
-}
-theGameCanvas.oncontextmenu = function(e) {
-	e.preventDefault();
-	//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
-	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
-}
-
-window.benchmark = false; // DEBUG
-window.fps = new FPS(function(fps){ /*fps_box.textContent = fps*/ }); // DEBUG
-map.drawAll();
-function step() {
-	map.update();
-	if (benchmark) map.drawAll();
+var h_size = theVeryGlobalUrlParams.w || 16;
+var v_size = theVeryGlobalUrlParams.h || 12;
+XHR('GET', "/connect/?x="+h_size+"&y="+v_size, null, function(status, text) {
+	var data = JSON.parse(text);
 	
-	fps.update();
-	setTimeout(step, benchmark ? 1 : 32);
-}
-step();
+	var map = new Map({
+		canvas: theGameCanvas,
+		h_size: h_size,
+		v_size: v_size,
+		cell_width: theVeryGlobalUrlParams.cw || 52,
+		generators: [
+			MapGenerator.cellRandom,
+			[MapGenerator.dirByArray, data.map],
+			//MapGenerator.dirMiddleSnake,
+			MapGenerator.wallBorder,
+			//[MapGenerator.hole, true, 0.75, 0.25, 0.15]
+		],
+		playersPositionsGenerator: MapGenerator.playersPositions,
+		playersColors: [Color.GREEN, Color.RED],
+		//playerColor: Color.GREEN,
+		onTurn: function(color) {
+			console.log("with #:", color.toString(), "as int:", color.valueOf());
+		},
+		onAnimationEnd: function(color) {console.log("anim. ended")
+			for (var i=0; i<bots.length; i++) {
+				if (bots[i].color.valueOf() != color.valueOf()) continue;
+				bots[i].turn(map);
+			}
+		}
+	});
+
+	var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
+	var bots = [new TestAi(map, Color.RED)];
+
+	theGameCanvas.onclick = function(e) {
+		//if (map.stillAnimating()) return;
+		//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
+		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
+	}
+	theGameCanvas.oncontextmenu = function(e) {
+		e.preventDefault();
+		//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
+	}
+
+	window.benchmark = false; // DEBUG
+	window.fps = new FPS(function(fps){ /*fps_box.textContent = fps*/ }); // DEBUG
+	map.drawAll();
+	function step() {
+		map.update();
+		if (benchmark) map.drawAll();
+	
+		fps.update();
+		setTimeout(step, benchmark ? 1 : 32);
+	}
+	step();
+});
 
 
 }
