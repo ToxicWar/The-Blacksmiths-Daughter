@@ -25,7 +25,7 @@ rc.stroke();
 document.body.appendChild(someCellImage);*/
 
 var someConnectionImage = document.createElement("canvas");
-var w = (theVeryGlobalUrlParams.iw || 16)/2;
+var w = (pupsConf.iw || 16)/2;
 someConnectionImage.width = someConnectionImage.height = w * devicePixelRatio;
 var rc = someConnectionImage.getContext("2d");
 rc.scale(devicePixelRatio, devicePixelRatio);
@@ -54,13 +54,13 @@ document.body.appendChild(someWallImage);*/
 // не лучшая идея, потом надо будет поменять
 Cell.prototype.arrowImage = cellArrowImage;
 Cell.prototype.backImage = cellBackImage;
-Cell.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
+Cell.prototype.image_width = pupsConf.iw;
 Cell.prototype.connectionImage = someConnectionImage;
-Cell.prototype.connection_image_width = (theVeryGlobalUrlParams.iw || 48)/2;
-Cell.prototype.connection_image_height = (theVeryGlobalUrlParams.iw || 48)/2;
+Cell.prototype.connection_image_width = pupsConf.iw/2;
+Cell.prototype.connection_image_height = pupsConf.iw/2;
 
 Wall.prototype.image = wallImage;
-Wall.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
+Wall.prototype.image_width = pupsConf.iw;
 
 
 
@@ -68,8 +68,8 @@ Wall.prototype.image_width = theVeryGlobalUrlParams.iw || 48;
 var multiplayer = false;
 
 if (multiplayer) {
-	var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
-	socket.on('hello', function(msg) {
+	var socket = io.connect('http://' + serverConf.addr + ':' + serverConf.port + '/test');
+	socket.on('hello roommates', function(msg) {
 		console.log(msg)
 		socket.emit('map', map.packGrig());
 	});
@@ -82,9 +82,9 @@ if (multiplayer) {
 
 var map = new Map({
 	canvas: theGameCanvas,
-	h_size: theVeryGlobalUrlParams.w || 16,
-	v_size: theVeryGlobalUrlParams.h || 12,
-	cell_width: theVeryGlobalUrlParams.cw || 52,
+	h_size: pupsConf.w,
+	v_size: pupsConf.h,
+	cell_width: pupsConf.cw,
 	generators: [
 		MapGenerator.cellRandom,
 		//[MapGenerator.dirByArray, data.map],
