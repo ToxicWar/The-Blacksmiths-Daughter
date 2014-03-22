@@ -87,10 +87,13 @@ if (gameConf.multiplayer) {
 		console.log(msg)
 		if (msg.map.length == 0) {console.log("len 0")
 			setupMap();
+			console.log("apply")
 			map.applyGenerator([
 				MapGenerator.playersPositions,
 				[Color.GREEN, Color.RED],
 				function(positions) {
+					map.drawAll();
+					console.log("p", positions)
 					for (var i=0; i<positions.length; i++) {
 						positions[i].col = positions[i].col.toString()
 					}
@@ -103,35 +106,41 @@ if (gameConf.multiplayer) {
 				}
 			]);
 		} else {
-			setupMap(msg.map.data);
+			setupMap(msg.map.data, Color.RED);
+			console.log("mmp", msg.map.positions)
 			for (var i=0; i<msg.map.positions.length; i++) {
 				var pos = msg.map.positions[i];
-				console.log(pos.col, Color.fromHTML(pos.col))
 				map.hackColor(pos.i, pos.j, Color.fromHTML(pos.col));
 			}
 		}
 	});
+} else {
+	setupMap();
 }
 
 
 var map;
 
-function setupMap(mapData) {
+function setupMap(mapData, playerColor) {
 	map = new Map({
 		canvas: theGameCanvas,
 		h_size: pupsConf.w,
 		v_size: pupsConf.h,
 		cell_width: pupsConf.cw,
-		generators: (!gameConf.multiplayer || !mapData ? [
+		generators: (!gameConf.multiplayer ? [
 			MapGenerator.cellRandom,
 			//[MapGenerator.dirByArray, data.map],
 			MapGenerator.dirMiddleSnake,
 			MapGenerator.wallBorder,
 			[MapGenerator.hole, true, 0.75, 0.25, 0.15],
 			[MapGenerator.playersPositions, [Color.GREEN, Color.RED]]
+		] : (!mapData ? [
+			MapGenerator.cellRandom,
+			MapGenerator.wallBorder,
+			[MapGenerator.hole, true, 0.5, 0.5, 0.15]
 		] : [
 			[MapGenerator.unpackGrid, mapData],
-		]),
+		])),
 		//playersPositionsGenerator: MapGenerator.playersPositions,
 		playersColors: [Color.GREEN, Color.RED],
 		//playerColor: Color.GREEN,
@@ -147,7 +156,7 @@ function setupMap(mapData) {
 		}
 	});
 	
-	var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
+	playerColor = playerColor || Color.GREEN; // а это тоже наверно должно идти от сервера
 	var bots = [new TestAi(map, Color.RED)];
 	
 	

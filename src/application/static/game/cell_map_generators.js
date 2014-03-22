@@ -60,7 +60,7 @@ MapGenerator.hole = function(grid, h_size, v_size, relative, x, y, r) {
 }
 
 function pointDistance(x0, y0, x1, y1) {
-	Math.sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
+	return Math.sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
 }
 function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	var dx = Math.cos(angle);
@@ -87,19 +87,21 @@ MapGenerator.playersPositions = function(grid, h_size, v_size, colors, callback)
 	for (var col_i=0; col_i<colors.length; col_i++) {
 		var max_dis = -Infinity;
 		var max_pos = null;
-		for (var i=0; i<5; i++) {
+		for (var i=0; i<3; i++) {
 			var randomized_angle = Math.PI + angle_delta*col_i + Math.random()*angle_delta/2 - angle_delta/4;
 			var pos = lastOnRay(grid, h_size, v_size, randomized_angle, Cell);
 			if (pos[2] > max_dis) {max_dis = pos[2]; max_pos=pos;}
 		}
+		
+		console.log(max_pos, colors)
 		if (callback) {
 			positions.push({
-				i: pos[0],
-				j: pos[1],
+				i: max_pos[0],
+				j: max_pos[1],
 				col: colors[col_i]
 			});
 		}
-		grid[pos[0] + pos[1]*h_size].col = colors[col_i];
+		grid[max_pos[0] + max_pos[1]*h_size].col = colors[col_i];
 	}
 	if (callback) callback(positions);
 }
