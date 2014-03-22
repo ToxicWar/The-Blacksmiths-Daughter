@@ -142,17 +142,22 @@ function setupMap(mapData) {
 	var bots = [new TestAi(map, Color.RED)];
 	
 	
-	var grab_x = NaN, grab_y = NaN;
-	function grab(x,y) {
+	var grab_x = NaN, grab_y = NaN, grab_len = NaN;
+	function grab(x, y) {
 		//if (map.stillAnimating()) return;
 		//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
-		
+		grab_x = x;
+		grab_y = y;
+		grab_len = 0;
 	}
-	function move(x,y) {
-		
+	function move(x, y) {
+		grab_len += pointDistance(x, y, grab_x, grab_y);
+		grab_x = x;
+		grab_y = y;
 	}
 	function drop() {
-		map.doTurnReal(grab_x, grab_y, 1, Color.GREEN);
+		if (grab_len < 5)
+			map.doTurnReal(grab_x, grab_y, 1, Color.GREEN);
 	}
 	
 	
