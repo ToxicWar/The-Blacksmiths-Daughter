@@ -65,6 +65,10 @@ Cell.prototype.trigger = function(map, i, j, triggerColor) {
 	map.addUpdatingSomethingAt(i, j, new FadingCell(this, triggerColor));
 }
 
+Cell.prototype.toString = function() {
+	return this.dir+"";
+}
+
 
 function Wall() {}
 Wall.prototype.rotate = function() {}
@@ -73,12 +77,17 @@ Wall.prototype.draw = function(rc) {
 	var iw = this.image_width;
 	rc.drawImage(this.image, -iw/2, -iw/2, iw, iw);
 }
+Wall.prototype.toString = function() {
+	return "W";
+}
 
 
 function Hole() {}
 Hole.prototype.rotate = function() {}
 Hole.prototype.trigger = function() {}
-
+Wall.prototype.toString = function() {
+	return "H";
+}
 
 // объекты, отвечающие за анимацию ячейки
 // update(map) - вызывается на каждом кадре анимации
