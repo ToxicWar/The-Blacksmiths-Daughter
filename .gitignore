@@ -4,3 +4,4 @@ lib
 *.pyo
 *~
 tizen/tizen.wgt
+mobile/platforms
