@@ -66,6 +66,12 @@ function Map(conf) {
 		}
 	}
 	
+	this.packGrig = function() {
+		var str = "";
+		for (var i=0; i<grid.length; i++) str += grid[i].toString();
+		return str;
+	}
+	
 	
 	// рисует ячейку в позиции i, j; если надо, пытается ей переопределить направление и цвет
 	function drawCell(cell, i, j, dir, col) {
