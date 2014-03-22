@@ -7,10 +7,9 @@
  <script src="core.js"></script>
 </head>
 
-<div id=""></div>
-
-<body onload = "init()">
+<body scroll="no">
 <div class="wrapper" id="gameScreen">
+
 	<div class="gameHeadDivHeight gameHead">
 		<div class="gameHeadDivHeight headWrap">
 			<div class="gameHeadDivHeight leftPlayers f_l">
@@ -27,29 +26,50 @@
 				</div>
 			</div>
 		</div>
+		<div class="list-of-skill">
+			<div class="player-list ">
+				<label for="left-menu-panel" id="left-menu-button"></label>
+				<div class="mini-skills"></div>
+				<div class="mini-skills"></div>
+				<div class="mini-skills"></div>
+			</div>
+			<div class="enemy-list f_r">
+				<div class="mini-skills"></div>
+				<div class="mini-skills"></div>
+				<div class="mini-skills"></div>
+				<label for="right-menu-panel" id="right-menu-button"></label>
+			</div>
+		</div>
+
 	</div>
 	<div class="gameBodyDivHeight gameBody">
-		<div class="gameBodyDivHeight abilities f_l">
-			<center>
-				<div class="abilityButton ABactive" id="leftAbPlayer_1">
-				
-				</div>
-			</center>
-		</div>
-		<div class="gameBodyDivHeight battleField  f_l">
-			<canvas id="theGameCanvas"></canvas>
-		</div>
-		<div class="gameBodyDivHeight abilities  f_l">
+		<form action="#">
+			<input type="checkbox" id="left-menu-panel" />
+			<input type="checkbox" id="right-menu-panel" />
+			<div class="gameBodyDivHeight player-abilities">
+				<center>
+					<div class="abilityButton ABactive" id="leftAbPlayer_1">
+					
+					</div>
+				</center>
+			</div>
+			<div class="gameBodyDivHeight enemy-abilities">
 			<center>
 				<div class="abilityButton ABactive" id="LeftAbPlayer_2">
 				
 				</div>
 			</center>
 		</div>
+		</form>
+		
+		<div class="gameBodyDivHeight battleField  f_l">
+			<canvas id="theGameCanvas"></canvas>
+		</div>
+		
 	</div>
 </div>
 
-<script src="/static/external/socket.io.min.js"></script>
+<script src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
 <script src="/static/config.js"></script>
 <script src="/static/utils.js"></script>
 <script src="/static/game/fps.js"></script>

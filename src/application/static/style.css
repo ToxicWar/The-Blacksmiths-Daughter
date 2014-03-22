@@ -1,3 +1,47 @@
+/*                 CSS Reset                   */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
 /*                 Main Screen                */
 body{
 	height: 768px;
@@ -93,6 +137,11 @@ body{
 /*                    Body                    */
 .gameBodyDivHeight{
 	height: 656px;
+	-webkit-transition: all 500ms ease;
+	-moz-transition: all 500ms ease;
+	-ms-transition: all 500ms ease;
+	-o-transition: all 500ms ease;
+	transition: all 500ms ease;
 }
 .gameBody{
 	width: 100%;
@@ -103,14 +152,70 @@ body{
 	width: 92px;
 	background: #888;
 }
+.player-abilities{
+	overflow: hidden;
+	width: 200px;
+	background: #888;
+	position: absolute;
+	left: -200px;
+}
+.enemy-abilities{
+	overflow: hidden;
+	width: 200px;
+	background: #888;
+	position: absolute;
+	left: 100%;
+	margin-left: 0px;
+}
 .battleField{
-	width: 840px;
+	width: 1024px;
 }
 .abilityButton{
 	margin-top: 15px;
-	width: 56px;
-	height: 56px;
+	width: 70px;
+	height: 70px;
+	float: right;
+	margin-right: 15px;
 	background: green;
+}
+.player-abilities .abilityButton{
+	margin-top: 15px;
+	width: 70px;
+	height: 70px;
+	margin-left: 15px;
+	float: left;
+	background: green;
+}
+.list-of-skill{
+	position: absolute;
+	top: 65px;
+	width: 1024px;
+}
+input{
+position: absolute;
+left: -999px;
+top: 0;}
+
+#left-menu-button,.mini-skills,#right-menu-button{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-color: #000;
+	margin-left: 8px;
+}
+.player-list,.enemy-list{
+	display: inline-block;
+}
+.enemy-list #left-menu-button,.enemy-list .mini-skills,#right-menu-button{
+	margin-left: 0px;
+	margin-right: 8px;
+	}
+
+#left-menu-panel:checked ~.player-abilities{
+	left: 0px;
+}
+#right-menu-panel:checked ~.enemy-abilities{
+	margin-left: -200px;
 }
 /*                Global Styles               */
 .f_l{
@@ -124,47 +229,4 @@ body{
 }
 .visible{
 	display:block;
-}
-/*                 CSS Reset                   */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
 }
