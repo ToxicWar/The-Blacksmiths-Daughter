@@ -26,6 +26,14 @@ Color.fade = function(out, col0, col1, a) {
 	out.b = (col0.b*ia + col1.b*a)|0;
 }
 
+Color.fromHTML = function(str) {
+	return new Color(
+		parseInt(str.substr(1,2), 16),
+		parseInt(str.substr(3,2), 16),
+		parseInt(str.substr(5,2), 16)
+	);
+}
+
 Color.GRAY = new Color(127,127,127);
 Color.RED = new Color(255,0,0);
 Color.GREEN = new Color(0,255,0);

@@ -1,3 +1,5 @@
+//TODO: нормальная очистка при вращении
+
 // по возможности i и j используются для целочисленных индексов в сетке,
 // а x и y - для координат (которые потом будут првращены в индексы или по которым будет что-то рисоваться)
 
@@ -39,8 +41,8 @@ function Map(conf) {
 	
 	// сетка. вообще, надо было её двумерным массиво делать, но уж так пошло...
 	var grid = new Array(h_size * v_size);
-	for (var i=0; i<conf.generators.length; i++) {
-		var gen = conf.generators[i];
+	
+	this.applyGenerator = function(gen) {
 		if (gen instanceof Function) {
 			gen(grid, h_size, v_size);
 		} else {
@@ -48,7 +50,13 @@ function Map(conf) {
 		}
 	}
 	
-	conf.playersPositionsGenerator(grid, h_size, v_size, conf.playersColors);
+	for (var i=0; i<conf.generators.length; i++) {
+		var gen = conf.generators[i];
+		this.applyGenerator(gen);
+	}
+	
+	//conf.playersPositionsGenerator(grid, h_size, v_size, conf.playersColors);
+	
 	
 	// возврщает ячейку в позиции i, j
 	this.cellAt = function(i, j) {
@@ -184,21 +192,24 @@ function Map(conf) {
 		
 		var cell = grid[i + j*h_size];
 		
-		if (cell.col.valueOf() != color.valueOf()) return false;
+		if (!cell.col || cell.col.valueOf() != color.valueOf()) return false;
 		if (playersColors[0].valueOf() != color.valueOf()) return false;
 		
 		cell.rotate(map, i, j, (cell.dir+4+delta)%4);
 		playersColors.push(playersColors.shift());
-		onTurn(playersColors[0]);
+		onTurn(i, j, playersColors[0]);
 		
 		return true;
 	}
 	
 	// для тестирования
-	this.hackColor = function(x, y) {
-		var i=x/cell_width|0, j=y/cell_width|0;
-		grid[i + j*h_size].col = Color.GREEN;
+	this.hackColor = function(i, j, col) {
+		grid[i + j*h_size].col = col;
 		drawCell(grid[i + j*h_size], i, j);
+	}
+	this.hackColorReal = function(x, y, col) {
+		var i=x/cell_width|0, j=y/cell_width|0;
+		this.hackColor(i, j, col);
 	}
 	
 	

@@ -10,6 +10,21 @@ MapGenerator.dirByArray = function(grid, h_size, v_size, arr) {
 			grid[i].dir = arr[i];
 }
 
+MapGenerator.unpackGrid = function(grid, h_size, v_size, data) {
+	var objByString = {};
+	var objs = [Cell, Wall, Hole];
+	
+	for (var i=0; i<objs.length; i++) {
+		for (var j=0; j<objs[i].prototype.strings.length; j++) {
+			objByString[objs[i].prototype.strings[j]] = objs[i];
+		}
+	}
+	
+	for (var i=0; i<data.length; i++) {
+		grid[i] = objByString[data[i]].fromString(data[i]);
+	}
+}
+
 MapGenerator.dirMiddleSnake = function(grid, h_size, v_size) {
 	var i_from = h_size/4|0, i_to = h_size*3/4;
 	for (var i=i_from; i<i_to; i++) {
@@ -45,7 +60,7 @@ MapGenerator.hole = function(grid, h_size, v_size, relative, x, y, r) {
 }
 
 function pointDistance(x0, y0, x1, y1) {
-	Math.sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
+	return Math.sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
 }
 function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	var dx = Math.cos(angle);
@@ -65,17 +80,28 @@ function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	}
 	return [last_i, last_j, pointDistance(last_i, last_j, x_origin, y_origin)];
 }
-MapGenerator.playersPositions = function(grid, h_size, v_size, colors) {
+MapGenerator.playersPositions = function(grid, h_size, v_size, colors, callback) {
 	var angle_delta = Math.PI*2 / colors.length;
+	var positions = [];
 	
 	for (var col_i=0; col_i<colors.length; col_i++) {
 		var max_dis = -Infinity;
 		var max_pos = null;
-		for (var i=0; i<5; i++) {
+		for (var i=0; i<3; i++) {
 			var randomized_angle = Math.PI + angle_delta*col_i + Math.random()*angle_delta/2 - angle_delta/4;
 			var pos = lastOnRay(grid, h_size, v_size, randomized_angle, Cell);
 			if (pos[2] > max_dis) {max_dis = pos[2]; max_pos=pos;}
 		}
-		grid[pos[0] + pos[1]*h_size].col = colors[col_i];
+		
+		console.log(max_pos, colors)
+		if (callback) {
+			positions.push({
+				i: max_pos[0],
+				j: max_pos[1],
+				col: colors[col_i]
+			});
+		}
+		grid[max_pos[0] + max_pos[1]*h_size].col = colors[col_i];
 	}
+	if (callback) callback(positions);
 }

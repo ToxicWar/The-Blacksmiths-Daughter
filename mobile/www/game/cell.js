@@ -69,6 +69,12 @@ Cell.prototype.toString = function() {
 	return this.dir+"";
 }
 
+Cell.prototype.strings = ["0", "1", "2", "3"];
+
+Cell.fromString = function(str) {
+	return new Cell(parseInt(str), Color.GRAY);
+}
+
 
 function Wall() {}
 Wall.prototype.rotate = function() {}
@@ -80,13 +86,21 @@ Wall.prototype.draw = function(rc) {
 Wall.prototype.toString = function() {
 	return "W";
 }
+Wall.prototype.strings = ["W"];
+Wall.fromString = function() {
+	return new Wall();
+}
 
 
 function Hole() {}
 Hole.prototype.rotate = function() {}
 Hole.prototype.trigger = function() {}
-Wall.prototype.toString = function() {
+Hole.prototype.toString = function() {
 	return "H";
+}
+Hole.prototype.strings = ["H"];
+Hole.fromString = function() {
+	return new Hole();
 }
 
 // объекты, отвечающие за анимацию ячейки
@@ -101,9 +115,11 @@ function RotatingCell(map, i, j, cell, dir_to) {
 	var delta = dir_to-dir_from;
 	if (delta > 2) dir_from = 4-dir_from;
 	if (delta < -2) dir_from = dir_from-4;
-	var lookDelta = cell.looksAt;
+	var lookAtFrom = cell.looksAt;
+	lookAtFrom.i+=i; lookAtFrom.j+=j;
 	cell.dir = dir_to;
-	map.drawAt(i+lookDelta.i, j+lookDelta.j);
+	map.drawAt(lookAtFrom.i, lookAtFrom.j);
+	this.lookAtFrom = lookAtFrom;
 	
 	this.cell = cell;
 	this.dir = dir_from;
@@ -118,6 +134,7 @@ RotatingCell.prototype.update = function(map, fast) {
 		map.drawAt(this.i+lookDelta.i, this.j+lookDelta.j);
 		return false;
 	}
+	map.drawAt(this.lookAtFrom.i, this.lookAtFrom.j);
 	this.dir += d*0.3;
 	return true;
 }

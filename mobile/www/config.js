@@ -5,6 +5,10 @@ var serverConf = {
 	port: location.port
 };
 
+var gameConf = {
+	multiplayer: false
+};
+
 
 var urlParams = location.hash.substr(1).split(",");
 var pupsConf = {
