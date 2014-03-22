@@ -1,6 +1,6 @@
 $(function() {
 	var ctx = document.getElementById('canvas').getContext('2d');
-	var scale = 18;
+	var scale = 38;
 
 	ctx.fillStyle = "rgba(0, 0, 200)";
 	for (var i = 0; i < 10; i++) {
