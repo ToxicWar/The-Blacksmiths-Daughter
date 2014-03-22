@@ -6,7 +6,7 @@ var serverConf = {
 };
 
 var gameConf = {
-	multiplayer: true
+	multiplayer: false
 };
 
 
