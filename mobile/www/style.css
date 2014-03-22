@@ -29,6 +29,43 @@ body{
 .mainScreenButt:active{
 	background: #888;
 }
+.prologue-img{
+	letter-spacing: -4px;
+	text-align: center;
+	vertical-align: middle;
+	position: absolute;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	background-color: #AFA;
+}
+.prologue-text{
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	top: 0px;
+	background-color: rgba(0,0,0,0.1);
+}
+.ava{
+	letter-spacing: normal;
+	vertical-align: middle;
+	width: 29.5%;
+	margin:0 5%;
+	display: inline-block;
+}
+.ava:last-child{
+	margin-left: 25%;
+}
+.text-field{
+	letter-spacing: normal;
+	vertical-align: middle;
+	margin-top: 30%;
+	width: 20%;
+	display: inline-block;
+}
 /*                 Game Screen                */
 /*                    Head                    */
 #gamescreen{}
