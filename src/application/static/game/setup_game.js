@@ -1,15 +1,6 @@
 function setupGame() {
 
 
-var urlParams = location.hash.substr(1).split(",");
-var theVeryGlobalUrlParams = {
-	w: urlParams[0],
-	h: urlParams[1],
-	cw: urlParams[2],
-	iw: urlParams[3]
-};
-
-
 
 // можно подгружать, можно генерить. не суть.
 /*var someCellImage = document.createElement("canvas");
@@ -65,74 +56,114 @@ Wall.prototype.image_width = pupsConf.iw;
 
 
 
-var multiplayer = false;
 
-if (multiplayer) {
+if (gameConf.multiplayer) {
+	var room = "someroom";
+	var positionsForRoommates;
 	var socket = io.connect('http://' + serverConf.addr + ':' + serverConf.port + '/test');
-	socket.on('hello roommates', function(msg) {
+	
+//	socket.emit('hello to roommates', {room: room});
+//	
+//	socket.on('hello from roommates', function(msg) {
+//		console.log(msg)
+//		if (msg.rooms.indexOf(room) == -1) {
+//			setupMap();
+//			socket.emit('map to roommates', {room: room, map: map.packGrig()});
+//		}
+//	});
+//	
+//	socket.on('map from roommates', function(msg) {
+//		console.log(msg)
+//		map.applyGenerator([
+//			MapGenerator.playersPositions,
+//			[Color.GREEN, Color.RED],
+//			function(positions){ positionsForRoommates = positions }
+//		]);
+//	});
+	
+	socket.emit('get multiplayer event', {room: room});
+	
+	socket.on('get multiplayer map', function(msg) {
 		console.log(msg)
-		socket.emit('map', map.packGrig());
-	});
-	socket.on('map', function(msg) {
-		console.log(msg)
-	});
-}
-
-
-
-var map = new Map({
-	canvas: theGameCanvas,
-	h_size: pupsConf.w,
-	v_size: pupsConf.h,
-	cell_width: pupsConf.cw,
-	generators: [
-		MapGenerator.cellRandom,
-		//[MapGenerator.dirByArray, data.map],
-		MapGenerator.dirMiddleSnake,
-		MapGenerator.wallBorder,
-		[MapGenerator.hole, true, 0.75, 0.25, 0.15]
-	],
-	playersPositionsGenerator: MapGenerator.playersPositions,
-	playersColors: [Color.GREEN, Color.RED],
-	//playerColor: Color.GREEN,
-	onTurn: function(color) {
-		console.log("with #:", color.toString(), "as int:", color.valueOf());
-	},
-	onAnimationEnd: function(color) {
-		if (multiplayer) return;
-		for (var i=0; i<bots.length; i++) {
-			if (bots[i].color.valueOf() != color.valueOf()) continue;
-			bots[i].turn(map);
+		if (msg.map.length == 0) {console.log("len 0")
+			setupMap();
+			map.applyGenerator([
+				MapGenerator.playersPositions,
+				[Color.GREEN, Color.RED],
+				function(positions) {console.log(map.packGrig())
+					socket.emit('set multiplayer map', {room: room, map: map.packGrig(), positions: positions});
+				}
+			]);
+		} else {
+			setupMap(msg.map);
+			for (var i=0; i<msg.positions.length; i++) {
+				var pos = msg.positions;
+				map.hackColor(pos.i, pos.j, pos.col);
+			}
 		}
+	});
+}
+
+
+var map;
+
+function setupMap(mapData) {
+	map = new Map({
+		canvas: theGameCanvas,
+		h_size: pupsConf.w,
+		v_size: pupsConf.h,
+		cell_width: pupsConf.cw,
+		generators: (!gameConf.multiplayer || !mapData ? [
+			MapGenerator.cellRandom,
+			//[MapGenerator.dirByArray, data.map],
+			MapGenerator.dirMiddleSnake,
+			MapGenerator.wallBorder,
+			[MapGenerator.hole, true, 0.75, 0.25, 0.15],
+			[MapGenerator.playersPositions, [Color.GREEN, Color.RED]]
+		] : [
+			[MapGenerator.unpackGrid, mapData],
+		]),
+		//playersPositionsGenerator: MapGenerator.playersPositions,
+		playersColors: [Color.GREEN, Color.RED],
+		//playerColor: Color.GREEN,
+		onTurn: function(color) {
+			console.log("with #:", color.toString(), "as int:", color.valueOf());
+		},
+		onAnimationEnd: function(color) {
+			if (gameConf.multiplayer) return;
+			for (var i=0; i<bots.length; i++) {
+				if (bots[i].color.valueOf() != color.valueOf()) continue;
+				bots[i].turn(map);
+			}
+		}
+	});
+
+	var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
+	var bots = [new TestAi(map, Color.RED)];
+
+	theGameCanvas.onclick = function(e) {
+		//if (map.stillAnimating()) return;
+		//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
+		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
 	}
-});
+	theGameCanvas.oncontextmenu = function(e) {
+		e.preventDefault();
+		//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
+		map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
+	}
 
-var playerColor = Color.GREEN; // а это тоже наверно должно идти от сервера
-var bots = [new TestAi(map, Color.RED)];
+	window.benchmark = false; // DEBUG
+	window.fps = new FPS(function(fps){ /*fps_box.textContent = fps*/ }); // DEBUG
+	map.drawAll();
+	function step() {
+		map.update();
+		if (benchmark) map.drawAll();
 
-theGameCanvas.onclick = function(e) {
-	//if (map.stillAnimating()) return;
-	//map.rotateAtRealBy(e.offsetX||e.layerX, e.offsetY||e.layerY, 1)
-	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.GREEN);
+		fps.update();
+		setTimeout(step, benchmark ? 1 : 32);
+	}
+	step();
 }
-theGameCanvas.oncontextmenu = function(e) {
-	e.preventDefault();
-	//map.hackColor(e.offsetX||e.layerX, e.offsetY||e.layerY);
-	map.doTurnReal(e.offsetX||e.layerX, e.offsetY||e.layerY, 1, Color.RED);
-}
-
-window.benchmark = false; // DEBUG
-window.fps = new FPS(function(fps){ /*fps_box.textContent = fps*/ }); // DEBUG
-map.drawAll();
-function step() {
-	map.update();
-	if (benchmark) map.drawAll();
-
-	fps.update();
-	setTimeout(step, benchmark ? 1 : 32);
-}
-step();
-
 
 
 }

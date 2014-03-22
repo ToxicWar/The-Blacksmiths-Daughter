@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = 'eb23cd1e-35e4-4fed-b4e1-7e912d59598f'
 socketio = SocketIO(app)
 
 backgrounds = ['1', '2', '3']
-multiplayer_map = []
+multiplayer_map = ""
 
 def generate_map(x, y):
     _map = []
@@ -41,6 +41,18 @@ def game():
     return render_template('game.html')
 
 
+#@socketio.on('hello to roommates', namespace='/test')
+#def join(message):
+#    emit('hello from roommates', {'rooms': list(request.namespace.rooms)})
+#    join_room(message['room'])
+
+
+#@socketio.on('map to roommates', namespace='/test')
+#def join(message):
+#    join_room(message['room'])
+#    emit('map from roommates', {'map': message['map']})
+
+
 @socketio.on('join', namespace='/test')
 def join(message):
     join_room(message['room'])
@@ -57,12 +69,13 @@ def leave(message):
 def send_room_message(message):
     emit('set coordinates', {'data': message['data'], 'color': message['color']}, room=message['room'])
 
-
+#used
 @socketio.on('set multiplayer map', namespace='/test')
 def set_multiplayer_map(message):
     multiplayer_map = message['map']
+    print multiplayer_map
 
-
+#used
 @socketio.on('get multiplayer event', namespace='/test')
 def get_multiplayer_map(message):
     emit('get multiplayer map', {'map': multiplayer_map})

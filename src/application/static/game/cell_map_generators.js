@@ -10,6 +10,19 @@ MapGenerator.dirByArray = function(grid, h_size, v_size, arr) {
 			grid[i].dir = arr[i];
 }
 
+MapGenerator.unpackGrid = function(grid, h_size, v_size, data) {
+	var objByString = {};
+	var objs = [Cell, Wall, Hole];
+	
+	for (var i=0; i<objs.length; i++)
+		for (var j=0; j<objs[i].strings.length; j++)
+			objByString[objByString[i].strings[j]] = objs[i];
+	
+	for (var i=0; i<data.length; i++) {
+		grid[i] = objByString[data[i]].fromString(data[i]);
+	}
+}
+
 MapGenerator.dirMiddleSnake = function(grid, h_size, v_size) {
 	var i_from = h_size/4|0, i_to = h_size*3/4;
 	for (var i=i_from; i<i_to; i++) {
@@ -65,8 +78,9 @@ function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	}
 	return [last_i, last_j, pointDistance(last_i, last_j, x_origin, y_origin)];
 }
-MapGenerator.playersPositions = function(grid, h_size, v_size, colors) {
+MapGenerator.playersPositions = function(grid, h_size, v_size, colors, callback) {
 	var angle_delta = Math.PI*2 / colors.length;
+	var positions = [];
 	
 	for (var col_i=0; col_i<colors.length; col_i++) {
 		var max_dis = -Infinity;
@@ -76,6 +90,14 @@ MapGenerator.playersPositions = function(grid, h_size, v_size, colors) {
 			var pos = lastOnRay(grid, h_size, v_size, randomized_angle, Cell);
 			if (pos[2] > max_dis) {max_dis = pos[2]; max_pos=pos;}
 		}
+		if (callback) {
+			positions.push({
+				i: pos[0],
+				j: pos[1],
+				col: colors[col_i]
+			});
+		}
 		grid[pos[0] + pos[1]*h_size].col = colors[col_i];
 	}
+	if (callback) callback(positions);
 }

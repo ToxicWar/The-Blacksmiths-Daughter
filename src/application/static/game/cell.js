@@ -69,6 +69,12 @@ Cell.prototype.toString = function() {
 	return this.dir+"";
 }
 
+Cell.prototype.strings = ["0", "1", "2", "3"];
+
+Cell.fromString = function(str) {
+	return new Cell(parseInt(str), Color.GRAY);
+}
+
 
 function Wall() {}
 Wall.prototype.rotate = function() {}
@@ -80,13 +86,21 @@ Wall.prototype.draw = function(rc) {
 Wall.prototype.toString = function() {
 	return "W";
 }
+Wall.prototype.strings = ["W"];
+Wall.fromString = function() {
+	return new Wall();
+}
 
 
 function Hole() {}
 Hole.prototype.rotate = function() {}
 Hole.prototype.trigger = function() {}
-Wall.prototype.toString = function() {
+Hole.prototype.toString = function() {
 	return "H";
+}
+Hole.prototype.strings = ["H"];
+Hole.fromString = function() {
+	return new Hole();
 }
 
 // объекты, отвечающие за анимацию ячейки
