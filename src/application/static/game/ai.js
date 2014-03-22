@@ -46,7 +46,7 @@ function FakeMap(map) {
 	}
 }
 
-function TestAi(map, color) {
+function TestAi(map, color, callback) {
 	this.color = color;
 	
 	var fakeMap = new FakeMap(map);
@@ -64,7 +64,10 @@ function TestAi(map, color) {
 			if (count > max_count) {max_count = count; best_pos = i;}
 		}
 		
-		if (best_pos == -1) throw new Error("What just had happened?");
+		if (best_pos == -1) {
+			if (callback) callback();
+			return;
+		}
 		
 		map.doTurn(best_pos%fakeMap.h_size, best_pos/fakeMap.h_size|0, 1, color);
 	}

@@ -178,7 +178,9 @@ function setupMap(mapData, playerColor) {
 	
 	playerColor = playerColor || Color.GREEN;
 	console.log(playerColor)
-	var bots = [new TestAi(map, Color.RED)];
+	var bots = [new TestAi(map, Color.RED, function() {
+		alert("Ах ты такой разэдакий! Давай ещё раз.");
+	})];
 	
 	
 	var grab_x = NaN, grab_y = NaN, grab_len = NaN;
