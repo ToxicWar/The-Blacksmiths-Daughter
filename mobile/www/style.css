@@ -46,7 +46,7 @@ table {
 body{
 	height: 768px;
 	width: 1024px;
-	  -moz-user-select: -moz-none;
+	 -moz-user-select: -moz-none;
 	 -o-user-select: none;
 	 -khtml-user-select: none;
 	 -webkit-user-select: none;
@@ -54,6 +54,7 @@ body{
 }
 .wrapper{
 	overflow: hidden !important;
+	background:green url("back/back.png")no-repeat fixed center;
 }
 
 #mainScreen{
@@ -118,7 +119,7 @@ body{
 }
 .gameHead{
 	width: 100%;
-	background: grey;
+
 }
 .headWrap{
 	width: 600px;
@@ -145,24 +146,24 @@ body{
 }
 .gameBody{
 	width: 100%;
-	background: green;
+
 }
 .abilities{
 	overflow: hidden;
 	width: 92px;
-	background: #888;
+	background: rgba(0,0,0,0.3);
 }
 .player-abilities{
 	overflow: hidden;
 	width: 200px;
-	background: #888;
+	background: rgba(0,0,0,0.3);
 	position: absolute;
 	left: -200px;
 }
 .enemy-abilities{
 	overflow: hidden;
 	width: 200px;
-	background: #888;
+	background: rgba(0,0,0,0.3);
 	position: absolute;
 	left: 100%;
 	margin-left: 0px;
@@ -176,7 +177,7 @@ body{
 	height: 70px;
 	float: right;
 	margin-right: 15px;
-	background: green;
+	background: rgba(0,0,0,0.3);
 }
 .player-abilities .abilityButton{
 	margin-top: 15px;
@@ -184,7 +185,7 @@ body{
 	height: 70px;
 	margin-left: 15px;
 	float: left;
-	background: green;
+	background: rgba(0,0,0,0.3);
 }
 .list-of-skill{
 	position: absolute;
@@ -200,7 +201,7 @@ top: 0;}
 	display: inline-block;
 	width: 35px;
 	height: 35px;
-	background-color: #000;
+	background-color: rgba(0,0,0,0.3);
 	margin-left: 8px;
 }
 .player-list,.enemy-list{
@@ -216,6 +217,12 @@ top: 0;}
 }
 #right-menu-panel:checked ~.enemy-abilities{
 	margin-left: -200px;
+}
+#left-menu-button,#right-menu-button{
+		background-color:rgba(0,0,0,0.5);
+}
+#VS{
+	width: 100px;
 }
 /*                Global Styles               */
 .f_l{

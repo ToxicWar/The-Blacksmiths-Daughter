@@ -12,8 +12,8 @@ var gameConf = {
 
 var urlParams = location.hash.substr(1).split(",");
 var pupsConf = {
-	w: urlParams[0] || 10,
+	w: urlParams[0] || 13,
 	h: urlParams[1] || 8,
-	cw: urlParams[2] || 78,
-	iw: urlParams[3] || 70
+	cw: urlParams[2] || 48,
+	iw: urlParams[3] || 40
 };

@@ -190,15 +190,30 @@ function setupMap(mapData, playerColor) {
 		grab_len = 0;
 	}
 	function move(x, y) {
+		if (grab_x != grab_x) return;
 		grab_len += pointDistance(x, y, grab_x, grab_y);
+		/*if (grab_len >= 5) {
+			var dx = x-grab_x;
+			var dy = y-grab_y;
+			var parent = theGameCanvas.parentNode;
+			var dw = theGameCanvas.offsetWidth - parent.offsetWidth;
+			var dh = theGameCanvas.offsetHeight - parent.offsetHeight;
+			console.log(dw, dh, dx, dy)
+			parent.style.position = "relative";
+			theGameCanvas.style.position = "absolute";
+			theGameCanvas.style.marginLeft = toRangeOrMiddle(-dw, theGameCanvas.offsetLeft+dx, 0) + "px";
+			theGameCanvas.style.marginTop  = toRangeOrMiddle(-dh, theGameCanvas.offsetTop+dy,  0) + "px";
+		}*/
 		grab_x = x;
 		grab_y = y;
 	}
 	function drop() {
+		if (grab_x != grab_x) return;
 		//alert([grab_x, grab_y, 1, Color.GREEN])
 		if (grab_len < 5) {
 			map.doTurnReal(grab_x, grab_y, 1, playerColor);
 		}
+		grab_x = grab_y = grab_len = NaN;
 	}
 	
 	

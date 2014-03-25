@@ -14,7 +14,7 @@ var startGame = {
                 document.getElementById("start-game-slide3").style.display = "block";
                 break;
             default:
-                window.location = "game.html";
+                window.location = "game";
         }
     }
 }

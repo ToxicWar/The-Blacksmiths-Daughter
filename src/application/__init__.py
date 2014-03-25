@@ -27,6 +27,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/dialog/')
+def dialog():
+    return render_template('dialog.html')
+
+
 @app.route('/connect/')
 def connect():
     _map = ''

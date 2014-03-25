@@ -25,7 +25,7 @@ Cell.prototype.draw = function(rc, cell_width, dir, col) {
 	rc.fillStyle = (col || this.col).toString();
 	//rc.fillRect(-iw/2, -iw/2, iw, iw);
 	rc.beginPath();
-	rc.arc(0, 0, iw/2*0.96, 0, Math.PI*2, true);
+	rc.arc(0, 0, iw/2*0.955, 0, Math.PI*2, true);
 	rc.fill();
 	rc.drawImage(this.backImage, -iw/2, -iw/2, iw, iw);
 	

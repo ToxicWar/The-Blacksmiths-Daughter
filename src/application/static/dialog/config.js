@@ -1,19 +1,19 @@
 var resources = [
-	    { id: "ino11", src: "./img/ino11.png" },
-	    { id: "ino22", src: "./img/ino22.png" },
-	    { id: "ino33", src: "./img/ino33.png" },
-	    { id: "cuz11", src: "./img/cuz11.png" },
-	    { id: "cuz22", src: "./img/cuz22.png" },
-	    { id: "cuz33", src: "./img/cuz33.png" }
+	    { id: "ino11", src: "/static/img/ino11.png" },
+	    { id: "ino22", src: "/static/img/ino22.png" },
+	    { id: "ino33", src: "/static/img/ino33.png" },
+	    { id: "cuz11", src: "/static/img/cuz11.png" },
+	    { id: "cuz22", src: "/static/img/cuz22.png" },
+	    { id: "cuz33", src: "/static/img/cuz33.png" }
 	];
 
 var resourcesLow = [
-	    { id: "ino11", src: "./img/ino11_lowres.png" },
-	    { id: "ino22", src: "./img/ino22_lowres.png" },
-	    { id: "ino33", src: "./img/ino33_lowres.png" },
-	    { id: "cuz11", src: "./img/cuz11_lowres.png" },
-	    { id: "cuz22", src: "./img/cuz22_lowres.png" },
-	    { id: "cuz33", src: "./img/cuz33_lowres.png" }
+	    { id: "ino11", src: "/static/img/ino11_lowres.png" },
+	    { id: "ino22", src: "/static/img/ino22_lowres.png" },
+	    { id: "ino33", src: "/static/img/ino33_lowres.png" },
+	    { id: "cuz11", src: "/static/img/cuz11_lowres.png" },
+	    { id: "cuz22", src: "/static/img/cuz22_lowres.png" },
+	    { id: "cuz33", src: "/static/img/cuz33_lowres.png" }
 	];
 
 
