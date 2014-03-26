@@ -1,16 +1,16 @@
 MapGenerator = {};
 
-MapGenerator.cellRandom = function(grid, h_size, v_size) {
+MapGenerator.cellRandom = function(map, grid, h_size, v_size) {
 	for (var i=0; i<grid.length; i++)
 		grid[i] = new Cell(Math.random()*4|0, Color.GRAY);
 }
 
-MapGenerator.dirByArray = function(grid, h_size, v_size, arr) {
+MapGenerator.dirByArray = function(map, grid, h_size, v_size, arr) {
 	for (var i=0; i<arr.length; i++)
-			grid[i].dir = arr[i];
+		grid[i].dir = arr[i];
 }
 
-MapGenerator.unpackGrid = function(grid, h_size, v_size, data) {
+MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
 	var objByString = {};
 	var objs = [Cell, Wall, Hole];
 	
@@ -25,7 +25,7 @@ MapGenerator.unpackGrid = function(grid, h_size, v_size, data) {
 	}
 }
 
-MapGenerator.dirMiddleSnake = function(grid, h_size, v_size) {
+MapGenerator.dirMiddleSnake = function(map, grid, h_size, v_size) {
 	var i_from = h_size/4|0, i_to = h_size*3/4;
 	for (var i=i_from; i<i_to; i++) {
 		for (var j=v_size/4|0; j<v_size*3/4; j++) {
@@ -37,12 +37,12 @@ MapGenerator.dirMiddleSnake = function(grid, h_size, v_size) {
 	}
 }
 
-MapGenerator.wallBorder = function(grid, h_size, v_size) {
+MapGenerator.wallBorder = function(map, grid, h_size, v_size) {
 	for (var i=0; i<h_size; i++) grid[i] = grid[i+h_size*(v_size-1)] = new Wall();
 	for (var i=0; i<v_size; i++) grid[i*h_size] = grid[(h_size-1)+i*h_size] = new Wall();
 }
 
-MapGenerator.hole = function(grid, h_size, v_size, relative, x, y, r) {
+MapGenerator.hole = function(map, grid, h_size, v_size, relative, x, y, r) {
 	if (relative) {
 		var min = h_size < v_size ? h_size : v_size;
 		x *= min;
@@ -80,7 +80,8 @@ function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	}
 	return [last_i, last_j, pointDistance(last_i, last_j, x_origin, y_origin)];
 }
-MapGenerator.playersPositions = function(grid, h_size, v_size, colors, callback) {
+MapGenerator.playersPositions = function(map, grid, h_size, v_size, callback) {
+	var colors = map.playersColors;
 	var angle_delta = Math.PI*2 / colors.length;
 	var positions = [];
 	
@@ -93,7 +94,6 @@ MapGenerator.playersPositions = function(grid, h_size, v_size, colors, callback)
 			if (pos[2] > max_dis) {max_dis = pos[2]; max_pos=pos;}
 		}
 		
-		console.log(max_pos, colors)
 		if (callback) {
 			positions.push({
 				i: max_pos[0],

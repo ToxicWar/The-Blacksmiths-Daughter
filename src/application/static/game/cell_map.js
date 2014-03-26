@@ -25,9 +25,12 @@ function Map(conf) {
 	});*/
 	
 	Object.defineProperties(this, {
-		"h_size": {get: function() {return h_size;}},
-		"v_size": {get: function() {return v_size;}}
+		"grid": {get: function(){ return grid; }},
+		"h_size": {get: function(){ return h_size; }},
+		"v_size": {get: function(){ return v_size; }},
+		"playersColors": {get: function(){ return playersColors; }}
 	});
+	
 	
 	// начальные манипуляции с канвасом
 	this.resetCanvas = function() {
@@ -44,9 +47,9 @@ function Map(conf) {
 	
 	this.applyGenerator = function(gen) {
 		if (gen instanceof Function) {
-			gen(grid, h_size, v_size);
+			gen(this, grid, h_size, v_size);
 		} else {
-			gen[0].apply(gen, [grid, h_size, v_size].concat(gen.slice(1)));
+			gen[0].apply(gen, [this, grid, h_size, v_size].concat(gen.slice(1)));
 		}
 	}
 	

@@ -17,6 +17,14 @@ function Cell(dir, col) {
 }
 
 Cell.prototype.connectable = true;
+// и всё равно как-то нетрушно
+// но делать ещё один уровень наследования мне хочется ещё меньше
+Cell.prototype.arrowImage = cellArrowImage;
+Cell.prototype.backImage = cellBackImage;
+Cell.prototype.image_width = pupsConf.iw;
+Cell.prototype.connectionImage = cellConnectionImage;
+Cell.prototype.connection_image_width = pupsConf.iw/2;
+Cell.prototype.connection_image_height = pupsConf.iw/2;
 
 Cell.prototype.draw = function(rc, cell_width, dir, col) {
 	var iw = this.image_width;
@@ -77,6 +85,8 @@ Cell.fromString = function(str) {
 
 
 function Wall() {}
+Wall.prototype.image = wallImage;
+Wall.prototype.image_width = pupsConf.iw;
 Wall.prototype.rotate = function() {}
 Wall.prototype.trigger = function() {}
 Wall.prototype.draw = function(rc) {

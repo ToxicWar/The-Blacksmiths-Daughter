@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
- 
- <link rel="stylesheet" href="/static/style.css">
- <script src="core.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<link rel="stylesheet" href="/static/style.css">
+	<script src="/static/core.js"></script>
 </head>
 
 <body scroll="no">
@@ -72,6 +72,29 @@
 <script src="http:////cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
 <script src="/static/config.js"></script>
 <script src="/static/utils.js"></script>
+<div style="display: none;">
+	<img id="cellArrowImage" src="/static/pups/pups-arrow.png" />
+	<img id="cellBackImage" src="/static/pups/pups-base.png" />
+	<img id="wallImage" src="/static/pups/wall.png" />
+	<script>
+		// пока картинки нет, это будет тут
+		var cellConnectionImage = (function() {
+			var img = document.createElement("canvas");
+			var w = (pupsConf.iw || 16)/2;
+			img.width = img.height = w * devicePixelRatio;
+			var rc = img.getContext("2d");
+			rc.scale(devicePixelRatio, devicePixelRatio);
+			rc.strokeRect(0, 0, w, w);
+			rc.fillStyle = "white";
+			rc.fillRect(0, 1, w, w-2);
+			document.body.appendChild(img);
+			return img;
+		})();
+	</script>
+<!--	<img id="cellArrowImage" src="/static/pups/pups1.png" />-->
+<!--	<img id="cellBackImage" src="/static/pups/pups-base.png" />-->
+<!--	<img id="wallImage" src="/static/pups/pups3.png" />-->
+</div>
 <script src="/static/game/fps.js"></script>
 <script src="/static/game/color.js"></script>
 <script src="/static/game/cell.js"></script>
@@ -79,18 +102,10 @@
 <script src="/static/game/cell_map_generators.js"></script>
 <script src="/static/game/setup_game.js"></script>
 <script src="/static/game/ai.js"></script>
-<div style="display: none;">
-	<img id="cellArrowImage" src="/static/pups/pups-arrow.png" />
-	<img id="cellBackImage" src="/static/pups/pups-base.png" />
-	<img id="wallImage" src="/static/pups/wall.png" />
-<!--	<img id="cellArrowImage" src="/static/pups/pups1.png" />-->
-<!--	<img id="cellBackImage" src="/static/pups/pups-base.png" />-->
-<!--	<img id="wallImage" src="/static/pups/pups3.png" />-->
-</div>
 <script>
-window.onload = function() {
-	setupGame();
-}
+// noting to do here.
+// see core.js.
+// and setup_game.js.
 </script>
 </body>
 </html>

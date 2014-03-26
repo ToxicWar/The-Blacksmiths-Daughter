@@ -24,3 +24,10 @@ function toRangeOrMiddle(a, x ,b) {
 	if (x > b) return b;
 	return x;
 }
+
+window.onerror = function(errorMsg, url, lineNumber) {
+	var msg = "Error happened on <"+url+
+		"\n> on line "+lineNumber+":\n"+
+		errorMsg;
+	alert(msg);
+}
