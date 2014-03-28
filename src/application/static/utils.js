@@ -25,6 +25,10 @@ function toRangeOrMiddle(a, x ,b) {
 	return x;
 }
 
+Array.prototype.random = function() {
+	return this[Math.random()*this.length|0];
+}
+
 window.onerror = function(errorMsg, url, lineNumber) {
 	var msg = "Error happened on <"+url+
 		"\n> on line "+lineNumber+":\n"+

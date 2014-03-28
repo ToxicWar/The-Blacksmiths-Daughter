@@ -50,42 +50,74 @@ function TestAi(map, color, callback) {
 	this.color = color;
 	
 	var fakeMap = new FakeMap(map);
+	var triggerablePositions = [];
 	
 	this.turn = function(map) {
-		var max_count = -Infinity;
-		var best_pos = -1;
-		map.copyGridTo(fakeMap.grid);
-		for (var i=0; i<fakeMap.grid.length; i++) {
-			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0);
-			if (count == -1) continue;
-			//console.log(i%fakeMap.h_size, i/fakeMap.h_size|0,count)
-			
-			map.copyGridTo(fakeMap.grid);
-			if (count > max_count) {max_count = count; best_pos = i;}
+		var best_pos = findBestActionForNow();
+		
+		if (triggerablePositions.length == 0) {
+			if (callback) callback();
+			return;
 		}
 		
 		if (best_pos == -1) {
-			if (callback) callback();
-			return;
+			console.log("good action for now was not found");
+			best_pos = findBestActionForNextTurn();
+		}
+		
+		if (best_pos == -1) {
+			console.log("good action for next turn was not found");
+			best_pos = triggerablePositions.random();
 		}
 		
 		map.doTurn(best_pos%fakeMap.h_size, best_pos/fakeMap.h_size|0, 1, color);
 	}
 	
-	function go(i, j) {
+	function findBestActionForNow() {
+		triggerablePositions.length = 0;
+		var max_count = 1; // 1 - повернулась клетка, ничего не закрасив после
+		var best_pos = -1;
+		for (var i=0; i<map.grid.length; i++) {
+			map.copyGridTo(fakeMap.grid);
+			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0, 0);
+			if (count == -1) continue;
+			triggerablePositions.push(i);
+			//console.log(i%fakeMap.h_size, i/fakeMap.h_size|0,count)
+			if (count > max_count) {max_count = count; best_pos = i;}
+		}
+		return best_pos;
+	}
+	
+	function findBestActionForNextTurn() {
+		var max_count = 1; // 1 - повернулась клетка, ничего н закрасив после
+		var best_pos = -1;
+		for (var i=0; i<triggerablePositions.length; i++) {
+			var pos = triggerablePositions[i];
+			map.copyGridTo(fakeMap.grid);
+			var count = go(pos%fakeMap.h_size, pos/fakeMap.h_size|0, 1);
+			console.log("count", count)
+			if (count == -1) continue;
+			if (count > max_count) {max_count = count; best_pos = pos;}
+		}
+		return best_pos;
+	}
+	
+	function triggerable(cell) {
+		if (!(cell instanceof Cell)) return false;
+		if (cell.col.valueOf() != color.valueOf()) return false;
+		return true;
+	}
+	
+	function go(i, j, additional_delta) {
 		fakeMap.updated_count = 0;
 		var cell = fakeMap.grid[i + j*fakeMap.h_size];
-		//console.log(i, j, cell.constructor.name)
-		if (!(cell instanceof Cell)) return -1;
-		//console.log(1)
-		if (cell.col.valueOf() != color.valueOf()) return -1;
-		console.log(cell.dir)
+		if (!triggerable(cell)) return -1;
 		
-		cell.dir = (cell.dir+1)%4;
+		cell.dir = (cell.dir+1 + additional_delta)%4;
 		var delta = cell.looksAt;
 		cell.dir = (cell.dir+3)%4;
 		//console.log(i,j,delta,fakeMap.cellAt(i+delta.i, j+delta.j))
-		if (!fakeMap.cellAt(i+delta.i, j+delta.j).connectable) return 0;
+		if (!fakeMap.cellAt(i+delta.i, j+delta.j).connectable) return 1;
 		console.log(cell.dir)
 		
 		cell.rotate(fakeMap, i, j, (cell.dir+1)%4);
@@ -94,4 +126,12 @@ function TestAi(map, color, callback) {
 		
 		return fakeMap.updated_count;
 	}
+	
+	/*function rotateTriggerableCellsBy(delta) {
+		for (var i=0; i<triggerablePositions.length; i++) {
+			var pos = triggerablePositions[i];
+			var cell = fakeMap.grid[pos];
+			if ('dir' in cell) cell.dir = (cell.dir+4+delta)%4;
+		}
+	}*/
 }
