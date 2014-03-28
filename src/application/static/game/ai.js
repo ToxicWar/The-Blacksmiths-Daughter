@@ -58,7 +58,7 @@ function TestAi(map, color, callback) {
 		for (var i=0; i<fakeMap.grid.length; i++) {
 			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0);
 			if (count == -1) continue;
-			console.log(i%fakeMap.h_size, i/fakeMap.h_size|0,count)
+			//console.log(i%fakeMap.h_size, i/fakeMap.h_size|0,count)
 			
 			map.copyGridTo(fakeMap.grid);
 			if (count > max_count) {max_count = count; best_pos = i;}

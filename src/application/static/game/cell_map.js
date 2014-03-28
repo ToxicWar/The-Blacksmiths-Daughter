@@ -69,8 +69,8 @@ function Map(conf) {
 	this.copyGridTo = function(array) {
 		for (var i=0; i<grid.length; i++) {
 			if (array[i] && grid[i] instanceof array[i].constructor) {
-				if (grid[i].col) array[i].col = grid[i].col;
-				if (grid[i].dir) array[i].dir = grid[i].dir;
+				if ('col' in grid[i]) array[i].col = grid[i].col;
+				if ('dir' in grid[i]) array[i].dir = grid[i].dir;
 			} else {
 				array[i] = new grid[i].constructor(grid[i].dir, grid[i].col);
 			}
