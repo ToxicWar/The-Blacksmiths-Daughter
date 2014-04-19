@@ -11,8 +11,6 @@ function Map(conf) {
 	var v_size = conf.v_size;
 	var cell_width = conf.cell_width;
 	var scale = devicePixelRatio;
-	var onTurn = conf.onTurn;
-	var onAnimationEnd = conf.onAnimationEnd;
 	var playersColors = conf.playersColors;
 	//var playerColor = conf.playerColor;
 	
@@ -171,7 +169,7 @@ function Map(conf) {
 		}
 		
 		if (keys.length == 0 && !firedAnimationEnd) {
-			onAnimationEnd(playersColors[0]);
+			core.emit("map-animation-end", [playersColors[0]]);
 			firedAnimationEnd = true;
 		}
 	}
@@ -200,7 +198,7 @@ function Map(conf) {
 		
 		cell.rotate(map, i, j, (cell.dir+4+delta)%4);
 		playersColors.push(playersColors.shift());
-		onTurn(i, j, playersColors[0]);
+		core.emit("map-turn-done", [i, j, playersColors[0]]);
 		
 		return true;
 	}
