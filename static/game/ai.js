@@ -46,6 +46,7 @@ function FakeMap(map) {
 	}
 }
 
+
 function TestAi(map, color, callback) {
 	this.color = color;
 	
@@ -79,22 +80,21 @@ function TestAi(map, color, callback) {
 		var best_pos = -1;
 		for (var i=0; i<map.grid.length; i++) {
 			map.copyGridTo(fakeMap.grid);
-			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0, 0);
+			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0, 1);
 			if (count == -1) continue;
 			triggerablePositions.push(i);
-			//console.log(i%fakeMap.h_size, i/fakeMap.h_size|0,count)
 			if (count > max_count) {max_count = count; best_pos = i;}
 		}
 		return best_pos;
 	}
 	
 	function findBestActionForNextTurn() {
-		var max_count = 1; // 1 - повернулась клетка, ничего н закрасив после
+		var max_count = 1; // 1 - повернулась клетка, ничего не закрасив после
 		var best_pos = -1;
 		for (var i=0; i<triggerablePositions.length; i++) {
 			var pos = triggerablePositions[i];
 			map.copyGridTo(fakeMap.grid);
-			var count = go(pos%fakeMap.h_size, pos/fakeMap.h_size|0, 1);
+			var count = go(pos%fakeMap.h_size, pos/fakeMap.h_size|0, 2);
 			console.log("count", count)
 			if (count == -1) continue;
 			if (count > max_count) {max_count = count; best_pos = pos;}
@@ -108,14 +108,14 @@ function TestAi(map, color, callback) {
 		return true;
 	}
 	
-	function go(i, j, additional_delta) {
+	function go(i, j, rot_delta) {
 		fakeMap.updated_count = 0;
 		var cell = fakeMap.grid[i + j*fakeMap.h_size];
 		if (!triggerable(cell)) return -1;
 		
-		cell.dir = (cell.dir+1 + additional_delta)%4;
+		cell.dir = (cell.dir + rot_delta)%4;
 		var delta = cell.looksAt;
-		cell.dir = (cell.dir+3)%4;
+		cell.dir = (cell.dir + 3)%4;
 		//console.log(i,j,delta,fakeMap.cellAt(i+delta.i, j+delta.j))
 		if (!fakeMap.cellAt(i+delta.i, j+delta.j).connectable) return 1;
 		console.log(cell.dir)
