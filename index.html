@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ 
+ <link rel="stylesheet" href="./static/style.css">
+ <script src="./static/core.js"></script>
+ <script src="./static/main_menu.js"></script>
+</head>
+
+
+<body onload = "init()">
+<div id=""></div>
+	
+	<div class="prologue-img hidden" id="start-ino-and-blk">
+		<img class="ava" src="./static/pups/ino.png"/>
+		<img class="ava" src="./static/pups/blacksmith.png"/>
+	</div>
+
+	<div class="prologue-text hidden" id="start-game-slide1" onclick="startGame.prologue(2);">
+		<div class="text-field">
+			<p> Котиков много не бывает. Больше котиков</p>
+		</div>
+	</div>
+	
+	<div class="prologue-text hidden" id="start-game-slide2" onclick="startGame.prologue(3);">
+			<div class="text-field">
+			<p> А может и бывает много котиков, только этого никто не видел</p>
+		</div>
+	</div>
+	<div class="prologue-text hidden" id="start-game-slide3" onclick="startGame.prologue(4);">
+		<div class="text-field">
+			<p> Фуфуфу котиков нашествие</p>
+			</div>
+	</div>
+<div class="wrapper" id="mainScreen" onclick="window.location.href='game.html';">
+	<div id="buttonsOnMainScreen">
+		<div class="mainScreenButt">
+			<center>Захватывающий сюжет</center>
+		</div>
+		<div class="mainScreenButt">
+			<center>Игра по сети</center>
+		</div>
+		<div class="mainScreenButt">
+			<center>Профиль игрока</center>
+		</div>
+	</div>
+</div>
+</body>
+</html>
