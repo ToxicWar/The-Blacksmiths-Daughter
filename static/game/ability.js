@@ -8,5 +8,8 @@ var Ability = {
 				if (!cell.col) continue;
 				map.addUpdatingSomethingAt(i, j, new FadingCell(cell, Color.GREEN, true));
 			}
+	},
+	bombReal: function(map, x, y) {
+		Ability.bomb(map, map.x2i(x), map.y2j(y));
 	}
 }

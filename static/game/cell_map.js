@@ -223,5 +223,13 @@ function Map(conf) {
 	}
 	
 	
+	core.on("map-perform-ability", function() {
+		//arguments.__proto__ = []; // лёгким движением руки брюки превращаются... в элегантнй массив!
+		//// каким-то чудом оно работает. как минимум в Хроме. и в ФФ.
+		//var abilityFunc = arguments.shift();
+		var abilityFunc = arguments[0];
+		arguments[0] = map;
+		abilityFunc.apply(null, arguments);
+	});
 	this.resetCanvas();
 }
