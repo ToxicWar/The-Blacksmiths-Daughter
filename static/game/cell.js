@@ -117,7 +117,7 @@ Hole.fromString = function() {
 // update(map) - вызывается на каждом кадре анимации
 //    если вернула false, значит анимация закончена
 
-function RotatingCell(map, i, j, cell, dir_to) {
+function RotatingCell(map, i, j, cell, dir_to, do_not_chain) {
 	this.i = i;
 	this.j = j;
 	this.dir_to = dir_to;
@@ -130,6 +130,7 @@ function RotatingCell(map, i, j, cell, dir_to) {
 	cell.dir = dir_to;
 	map.drawAt(lookAtFrom.i, lookAtFrom.j);
 	this.lookAtFrom = lookAtFrom;
+	this.do_not_chain = do_not_chain;
 	
 	this.cell = cell;
 	this.dir = dir_from;
@@ -150,10 +151,11 @@ RotatingCell.prototype.update = function(map, fast) {
 }
 
 
-function FadingCell(cell, col_to) {
+function FadingCell(cell, col_to, do_not_chain) {
 	this.a = 0;
 	this.col_to = col_to;
 	this.col_from = cell.col;
+	this.do_not_chain = do_not_chain;
 	
 	this.cell = cell;
 	this.dir = cell.dir;

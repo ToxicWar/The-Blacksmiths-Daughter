@@ -1,4 +1,5 @@
 //TODO: нормальная очистка при вращении
+//TODO: map.trigger(x,i) - from updating cells
 
 // по возможности i и j используются для целочисленных индексов в сетке,
 // а x и y - для координат (которые потом будут првращены в индексы, или по которым будет что-то рисоваться)
@@ -58,9 +59,16 @@ function Map(conf) {
 	
 	//conf.playersPositionsGenerator(grid, h_size, v_size, conf.playersColors);
 	
+	this.x2i = function(x) { return x/cell_width|0 }
+	this.y2j = function(y) { return y/cell_width|0 }
 	
 	// возврщает ячейку в позиции i, j
 	this.cellAt = function(i, j) {
+		return grid[i + j*h_size];
+	}
+	this.safeCellAt = function(i, j) {
+		if (i < 0 || i >= h_size) return null;
+		if (j < 0 || j >= v_size) return null;
 		return grid[i + j*h_size];
 	}
 	
@@ -157,6 +165,7 @@ function Map(conf) {
 			
 			if (updated) continue;
 			delete updatingCells[keys[i]]; // отанимировало? убираем из очереди
+			if (ucell.do_not_chain) continue;
 			
 			var delta = ucell.cell.looksAt;
 			var _i = ucell_i + delta.i;

@@ -86,6 +86,11 @@ function setupMap(mapData, playerColor) {
 		e.preventDefault();
 		drop();
 	}
+	theGameCanvas.oncontextmenu = function(e) {
+		e.preventDefault();
+		var pos = getPos(theGameCanvas);
+		Ability.bomb(map, map.x2i(e.pageX-pos.x), map.y2j(e.pageY-pos.y));
+	}
 	
 	theGameCanvas.ontouchstart = function(e) {
 		e.preventDefault();
