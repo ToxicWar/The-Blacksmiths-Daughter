@@ -69,8 +69,10 @@ Cell.prototype.rotate = function(map, i, j, rotateBy) {
 	map.addUpdatingSomethingAt(i, j, new RotatingCell(map, i, j, this, rotateBy));
 }
 
-Cell.prototype.trigger = function(map, i, j, triggerColor) {
-	map.addUpdatingSomethingAt(i, j, new FadingCell(this, triggerColor));
+Cell.prototype.trigger = function(map, i, j, triggerColor, do_not_chain) {
+	if (this.col.valueOf() == triggerColor.valueOf()) return false;
+	map.addUpdatingSomethingAt(i, j, new FadingCell(map, i, j, this, triggerColor, do_not_chain));
+	return true;
 }
 
 Cell.prototype.toString = function() {
@@ -88,7 +90,7 @@ function Wall() {}
 Wall.prototype.image = wallImage;
 Wall.prototype.image_width = pupsConf.iw;
 Wall.prototype.rotate = function() {}
-Wall.prototype.trigger = function() {}
+Wall.prototype.trigger = function() { return false }
 Wall.prototype.draw = function(rc) {
 	var iw = this.image_width;
 	rc.drawImage(this.image, -iw/2, -iw/2, iw, iw);
@@ -104,7 +106,7 @@ Wall.fromString = function() {
 
 function Hole() {}
 Hole.prototype.rotate = function() {}
-Hole.prototype.trigger = function() {}
+Hole.prototype.trigger = function() { return false }
 Hole.prototype.toString = function() {
 	return "H";
 }
@@ -140,9 +142,11 @@ function RotatingCell(map, i, j, cell, dir_to, do_not_chain) {
 RotatingCell.prototype.update = function(map, fast) {
 	var d = this.dir_to - this.dir;
 	if (Math.abs(d) < 0.1 || fast) {
-		/*this.cell.dir = */this.dir = this.dir_to;
-		var lookDelta = this.cell.looksAt;
-		map.drawAt(this.i+lookDelta.i, this.j+lookDelta.j);
+		this.dir = this.dir_to;
+		if (!this.do_not_chain) {
+			var lookDelta = this.cell.looksAt;
+			map.triggerAt(this.i+lookDelta.i, this.j+lookDelta.j, this.col);
+		}
 		return false;
 	}
 	map.drawAt(this.lookAtFrom.i, this.lookAtFrom.j);
@@ -151,7 +155,9 @@ RotatingCell.prototype.update = function(map, fast) {
 }
 
 
-function FadingCell(cell, col_to, do_not_chain) {
+function FadingCell(map, i, j, cell, col_to, do_not_chain) {
+	this.i = i;
+	this.j = j;
 	this.a = 0;
 	this.col_to = col_to;
 	this.col_from = cell.col;
@@ -170,6 +176,10 @@ FadingCell.prototype.update = function(map, fast) {
 	this.a += 0.3;
 	if (this.a >= 1 || fast) {
 		this.cell.col = this.col = this.col_to;
+		if (!this.do_not_chain) {
+			var lookDelta = this.cell.looksAt;
+			map.triggerAt(this.i+lookDelta.i, this.j+lookDelta.j, this.col);
+		}
 		return false;
 	}
 	Color.fade(this.col, this.col_from, this.col_to, this.a);

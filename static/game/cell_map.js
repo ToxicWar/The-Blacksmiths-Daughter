@@ -1,5 +1,4 @@
 //TODO: нормальная очистка при вращении
-//TODO: map.trigger(x,i) - from updating cells
 
 // по возможности i и j используются для целочисленных индексов в сетке,
 // а x и y - для координат (которые потом будут првращены в индексы, или по которым будет что-то рисоваться)
@@ -132,6 +131,10 @@ function Map(conf) {
 		this.drawAt(x/cell_width|0, y/cell_width|0);
 	}
 	
+	this.triggerAt = function(i, j, color, do_not_chain) {
+		return this.cellAt(i,j).trigger(map, i, j, color, do_not_chain);
+	}
+	
 	
 	// обновление всего по списку
 	var updatingCells = {};
@@ -165,16 +168,6 @@ function Map(conf) {
 			
 			if (updated) continue;
 			delete updatingCells[keys[i]]; // отанимировало? убираем из очереди
-			if (ucell.do_not_chain) continue;
-			
-			var delta = ucell.cell.looksAt;
-			var _i = ucell_i + delta.i;
-			var _j = ucell_j + delta.j;
-			var nextCell = grid[_i + _j*h_size];
-			// тыкаем следующую в цепочке, если поддерживает цвета и ещё не нашего цвета
-			if (nextCell.col && nextCell.col.valueOf() != ucell.cell.col.valueOf()) {
-				nextCell.trigger(map, _i, _j, ucell.cell.col);
-			}
 		}
 		
 		if (keys.length == 0 && !firedAnimationEnd) {

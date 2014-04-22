@@ -137,7 +137,7 @@ core.on("window-onload", function() {
 	core.on("map-animation-end", function(color) {
 		for (var i=0; i<bots.length; i++) {
 			if (bots[i].color.valueOf() != color.valueOf()) continue;
-			bots[i].turn(map);
+			//bots[i].turn(map);
 		}
 	});
 	// сокеты? а чего, оно всё равно не работает
