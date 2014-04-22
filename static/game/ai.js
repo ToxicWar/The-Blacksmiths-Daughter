@@ -7,9 +7,7 @@ function FakeMap(map) {
 	this.updatingCells = {};
 	this.updated_count = 0;
 	
-	this.triggerAt = function(i, j, color, do_not_chain) {
-		return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
-	}
+	this.triggerAt = map.triggerAt;
 	
 	this.addUpdatingSomethingAt = function(i, j, obj) {
 		console.log(i,j,obj.constructor.name)
@@ -17,10 +15,7 @@ function FakeMap(map) {
 		this.updated_count++;
 	};
 	
-	this.stillAnimating = function() {
-		for (var i in this.updatingCells) return true;
-		return false;
-	}
+	this.stillAnimating = map.stillAnimating;
 	
 	this.update = function() {// копипаста, нетруъ  // уже лучше, но всё равно TODO
 		var keys = Object.keys(this.updatingCells);
