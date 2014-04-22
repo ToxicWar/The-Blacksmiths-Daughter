@@ -7,12 +7,15 @@ function Map(conf) {
 	var map = this;
 	var canvas = conf.canvas;
 	var rc;
-	var h_size = conf.h_size;
-	var v_size = conf.v_size;
 	var cell_width = conf.cell_width;
 	var scale = devicePixelRatio;
 	var playersColors = conf.playersColors;
-	//var playerColor = conf.playerColor;
+	var neutralColor = conf.neutralColor;
+	var h_size = conf.h_size || 0;
+	var v_size = conf.v_size || 0;
+	
+	// сетка. вообще, надо было её двумерным массиво делать, но уж так пошло...
+	var grid = new Array(h_size * v_size);
 	
 	/*Object.defineProperty(this, "rc", {
 		get: function() {return rc;}
@@ -23,12 +26,16 @@ function Map(conf) {
 	});*/
 	
 	Object.defineProperties(this, {
-		"grid": {get: function(){ return grid; }},
-		"h_size": {get: function(){ return h_size; }},
-		"v_size": {get: function(){ return v_size; }},
-		"playersColors": {get: function(){ return playersColors; }}
+		"grid": {get: function(){ return grid }},
+		"h_size": {get: function(){ return h_size }, set: function(h){ h_size=h }},
+		"v_size": {get: function(){ return v_size }, set: function(v){ v_size=v }},
+		"playersColors": {get: function(){ return playersColors }},
+		"neutralColor": {get: function(){ return neutralColor }},
 	});
 	
+	this.colorFor = function(player_id) {
+		return playerColors[player_id];
+	}
 	
 	// начальные манипуляции с канвасом
 	this.resetCanvas = function() {
@@ -40,8 +47,6 @@ function Map(conf) {
 		rc.scale(scale, scale);
 	}
 	
-	// сетка. вообще, надо было её двумерным массиво делать, но уж так пошло...
-	var grid = new Array(h_size * v_size);
 	
 	this.applyGenerator = function(gen) {
 		if (gen instanceof Function) {
@@ -51,9 +56,11 @@ function Map(conf) {
 		}
 	}
 	
-	for (var i=0; i<conf.generators.length; i++) {
-		var gen = conf.generators[i];
-		this.applyGenerator(gen);
+	this.applyGenerators = function() {
+		for (var i=0; i<conf.generators.length; i++) {
+			var gen = conf.generators[i];
+			this.applyGenerator(gen);
+		}
 	}
 	
 	//conf.playersPositionsGenerator(grid, h_size, v_size, conf.playersColors);
@@ -223,5 +230,6 @@ function Map(conf) {
 		arguments[0] = map;
 		abilityFunc.apply(null, arguments);
 	});
+	this.applyGenerators();
 	this.resetCanvas();
 }

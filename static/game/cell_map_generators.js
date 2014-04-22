@@ -10,21 +10,6 @@ MapGenerator.dirByArray = function(map, grid, h_size, v_size, arr) {
 		grid[i].dir = arr[i];
 }
 
-MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
-	var objByString = {};
-	var objs = [Cell, Wall, Hole];
-	
-	for (var i=0; i<objs.length; i++) {
-		for (var j=0; j<objs[i].prototype.strings.length; j++) {
-			objByString[objs[i].prototype.strings[j]] = objs[i];
-		}
-	}
-	
-	for (var i=0; i<data.length; i++) {
-		grid[i] = objByString[data[i]].fromString(data[i]);
-	}
-}
-
 MapGenerator.dirMiddleSnake = function(map, grid, h_size, v_size) {
 	var i_from = h_size/4|0, i_to = h_size*3/4;
 	for (var i=i_from; i<i_to; i++) {

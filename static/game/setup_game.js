@@ -34,6 +34,7 @@ function setupMap(mapData, playerColor) {
 		cell_width: pupsConf.cw,
 		generators: getGenerators(mapData),
 		playersColors: getPlayersColors(),
+		neutralColor: Color.GRAY
 	});
 	
 	playerColor = playerColor || Color.GREEN;
