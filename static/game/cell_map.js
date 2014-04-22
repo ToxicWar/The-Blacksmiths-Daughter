@@ -100,10 +100,10 @@ function Map(conf) {
 		rc.translate(dx, dy);
 		rc.clearRect(-cell_width/2, -cell_width/2, cell_width, cell_width);
 		if (cell.connectable) {
-			if ((csell=grid[i+1 + (j  )*h_size]).connectable) csell.drawPartAt(rc,-1, 0, cell_width);
-			if ((csell=grid[i-1 + (j  )*h_size]).connectable) csell.drawPartAt(rc, 1, 0, cell_width);
-			if ((csell=grid[i   + (j+1)*h_size]).connectable) csell.drawPartAt(rc, 0,-1, cell_width);
-			if ((csell=grid[i   + (j-1)*h_size]).connectable) csell.drawPartAt(rc, 0, 1, cell_width);
+			if ((csell=this.cellAt(i+1, j  )).connectable) csell.drawPartAt(rc,-1, 0, cell_width);
+			if ((csell=this.cellAt(i-1, j  )).connectable) csell.drawPartAt(rc, 1, 0, cell_width);
+			if ((csell=this.cellAt(i  , j+1)).connectable) csell.drawPartAt(rc, 0,-1, cell_width);
+			if ((csell=this.cellAt(i  , j-1)).connectable) csell.drawPartAt(rc, 0, 1, cell_width);
 		}
 		cell.draw(rc, cell_width, dir, col);
 		rc.restore();
@@ -114,15 +114,14 @@ function Map(conf) {
 		//rc.clearRect(0, 0, canvas.width, canvas.height);
 		for (var i=0; i<h_size; i++) {
 			for (var j=0; j<v_size; j++) {
-				var cell = grid[i + j*h_size];
-				this.drawCell(cell, i, j);
+				this.drawCell(this.cellAt(i, j), i, j);
 			}
 		}
 	}
 	
 	// перерисовать в i, j
 	this.drawAt = function(i, j) {
-		this.drawCell(grid[i + j*h_size], i, j);
+		this.drawCell(this.cellAt(i, j), i, j);
 	}
 	// перерисовать в x и y
 	// real - не потому что числа дробные (хотя и такие можно),
@@ -132,7 +131,7 @@ function Map(conf) {
 	}
 	
 	this.triggerAt = function(i, j, color, do_not_chain) {
-		return this.cellAt(i,j).trigger(map, i, j, color, do_not_chain);
+		return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
 	}
 	
 	
@@ -178,8 +177,7 @@ function Map(conf) {
 	
 	// повернуть; для внутреннего (пока) использования
 	function rotateBy(i, j, dir_delta) {
-		var cell = grid[i + j*h_size];
-		cell.rotate(map, i, j, (cell.dir+4+dir_delta)%4);
+		this.cellAt(i, j).rotate(map, i, j, (cell.dir+4+dir_delta)%4);
 	}
 	// одна из основных торчащих наружу функций
 	this.rotateAtRealBy = function(x, y, delta) {
@@ -193,7 +191,7 @@ function Map(conf) {
 	this.doTurn = function(i, j, delta, color) {
 		if (map.stillAnimating()) return false;
 		
-		var cell = grid[i + j*h_size];
+		var cell = this.cellAt(i, j);
 		
 		if (!cell.col || cell.col.valueOf() != color.valueOf()) return false;
 		if (playersColors[0].valueOf() != color.valueOf()) return false;
@@ -207,8 +205,9 @@ function Map(conf) {
 	
 	// для тестирования
 	this.hackColor = function(i, j, col) {
-		grid[i + j*h_size].col = col;
-		this.drawCell(grid[i + j*h_size], i, j);
+		var cell = this.cellAt(i, j);
+		cell.col = col;
+		this.drawCell(cell, i, j);
 	}
 	this.hackColorReal = function(x, y, col) {
 		var i=x/cell_width|0, j=y/cell_width|0;

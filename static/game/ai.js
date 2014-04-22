@@ -6,41 +6,42 @@ function FakeMap(map) {
 	this.drawAt = function() {};
 	this.updatingCells = {};
 	this.updated_count = 0;
+	
+	this.triggerAt = function(i, j, color, do_not_chain) {
+		return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
+	}
+	
 	this.addUpdatingSomethingAt = function(i, j, obj) {
 		console.log(i,j,obj.constructor.name)
 		this.updatingCells[i+j*this.h_size] = obj;
 		this.updated_count++;
 	};
+	
 	this.stillAnimating = function() {
 		for (var i in this.updatingCells) return true;
 		return false;
 	}
-	this.update = function() {// копипаста, нетруъ, TODO
+	
+	this.update = function() {// копипаста, нетруъ  // уже лучше, но всё равно TODO
 		var keys = Object.keys(this.updatingCells);
 		for (var i=0; i<keys.length; i++) {
 			var ucell = this.updatingCells[keys[i]];
-			var pos = parseInt(keys[i]);
-			var ucell_i = pos%this.h_size;
-			var ucell_j = pos/this.h_size|0;
+			//var pos = parseInt(keys[i]);
+			//var ucell_i = pos%this.h_size;
+			//var ucell_j = pos/this.h_size|0;
 			
 			var updated = ucell.update(this, true);
+			//don't ucell.draw(...)
 			
 			if (updated) continue;
 			delete this.updatingCells[keys[i]];
-			
-			var delta = ucell.cell.looksAt;
-			var _i = ucell_i + delta.i;
-			var _j = ucell_j + delta.j;
-			var nextCell = this.grid[_i + _j*this.h_size];
-			// тыкаем следующую в цепочке, если поддерживает цвета и ещё не нашего цвета
-			if (nextCell.col && nextCell.col.valueOf() != ucell.cell.col.valueOf()) {
-				nextCell.trigger(fakeMap, _i, _j, ucell.cell.col);
-			}
 		}
 	}
+	
 	this.cellAtPos = function(pos) {
 		return this.grid[pos.i + pos.j*this.h_size];
 	}
+	
 	this.cellAt = function(i, j) {
 		return this.grid[i + j*this.h_size];
 	}
@@ -116,7 +117,7 @@ function TestAi(map, color, callback) {
 		cell.dir = (cell.dir + rot_delta)%4;
 		var delta = cell.looksAt;
 		cell.dir = (cell.dir + 3)%4;
-		//console.log(i,j,delta,fakeMap.cellAt(i+delta.i, j+delta.j))
+		
 		if (!fakeMap.cellAt(i+delta.i, j+delta.j).connectable) return 1;
 		console.log(cell.dir)
 		
