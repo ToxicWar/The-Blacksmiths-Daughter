@@ -120,7 +120,7 @@ Hole.fromString = function() {
 //    если вернула false, значит анимация закончена
 
 function RotatingCell(map, i, j, cell, dir_to, do_not_chain) {
-	this.i = i;
+	this.i = i;//TODO: так ли нужно тут хранить координаты?
 	this.j = j;
 	this.dir_to = dir_to;
 	var dir_from = cell.dir;
@@ -151,7 +151,12 @@ RotatingCell.prototype.update = function(map, fast) {
 	}
 	map.drawAt(this.lookAtFrom.i, this.lookAtFrom.j);
 	this.dir += d*0.3;
+	map.drawCell(this.cell, this.i, this.j, this.dir, this.col);
 	return true;
+}
+
+RotatingCell.prototype.draw = function(map) {
+	map.drawCell(this.cell, this.i, this.j, this.dir, this.col);
 }
 
 
@@ -184,4 +189,8 @@ FadingCell.prototype.update = function(map, fast) {
 	}
 	Color.fade(this.col, this.col_from, this.col_to, this.a);
 	return true;
+}
+
+FadingCell.prototype.draw = function(map) {
+	map.drawCell(this.cell, this.i, this.j, this.dir, this.col);
 }

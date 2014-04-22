@@ -90,7 +90,7 @@ function Map(conf) {
 	
 	
 	// рисует ячейку в позиции i, j; если надо, пытается ей переопределить направление и цвет
-	function drawCell(cell, i, j, dir, col) {
+	this.drawCell = function(cell, i, j, dir, col) {
 		if (!cell.draw) return;
 		var dx = (i+0.5) * cell_width;
 		var dy = (j+0.5) * cell_width;
@@ -115,14 +115,14 @@ function Map(conf) {
 		for (var i=0; i<h_size; i++) {
 			for (var j=0; j<v_size; j++) {
 				var cell = grid[i + j*h_size];
-				drawCell(cell, i, j);
+				this.drawCell(cell, i, j);
 			}
 		}
 	}
 	
 	// перерисовать в i, j
 	this.drawAt = function(i, j) {
-		drawCell(grid[i + j*h_size], i, j);
+		this.drawCell(grid[i + j*h_size], i, j);
 	}
 	// перерисовать в x и y
 	// real - не потому что числа дробные (хотя и такие можно),
@@ -139,7 +139,7 @@ function Map(conf) {
 	// обновление всего по списку
 	var updatingCells = {};
 	var firedAnimationEnd = false;
-	// добавление в очередь на перерисовку; для и иже с ними
+	// добавление в очередь на перерисовку; для и иже с ними //кого?
 	this.addUpdatingSomethingAt = function(i, j, obj) {
 		updatingCells[i + j*h_size] = obj;
 		firedAnimationEnd = false;
@@ -155,7 +155,7 @@ function Map(conf) {
 	}
 	// апдейт всего того из очереди
 	this.update = function() {
-		var keys = Object.keys(updatingCells);
+		var keys = Object.keys(updatingCells); //TODO: нетруъ каждый кадр массив создавать
 		
 		for (var i=0; i<keys.length; i++) {
 			var ucell = updatingCells[keys[i]];
@@ -164,7 +164,7 @@ function Map(conf) {
 			var ucell_j = pos/h_size|0;
 			
 			var updated = ucell.update(this);
-			drawCell(ucell.cell, ucell_i, ucell_j, ucell.dir, ucell.col); // собственно, кадр анимации
+			ucell.draw(this); // кадр анимации
 			
 			if (updated) continue;
 			delete updatingCells[keys[i]]; // отанимировало? убираем из очереди
@@ -208,7 +208,7 @@ function Map(conf) {
 	// для тестирования
 	this.hackColor = function(i, j, col) {
 		grid[i + j*h_size].col = col;
-		drawCell(grid[i + j*h_size], i, j);
+		this.drawCell(grid[i + j*h_size], i, j);
 	}
 	this.hackColorReal = function(x, y, col) {
 		var i=x/cell_width|0, j=y/cell_width|0;
