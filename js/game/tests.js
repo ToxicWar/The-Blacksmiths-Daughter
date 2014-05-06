@@ -8,11 +8,17 @@
 	var u = undefined;
 	var r = Color.RED, g = Color.GREEN, n = Color.GRAY;
 	
-	var lvl1 =
+	var lvl1_clear =
 	"-- -- -- -- --\n\
 	 |  1v 0^ 0>  |\n\
 	 |  0< .  2^  |\n\
 	 -- -- -- -- --";
+	
+	var lvl1_easy =
+	"W0 W0 W0 W0 W0\n\
+	 W0 11 03 00 W0\n\
+	 W0 02 __ 23 W0\n\
+	 W0 W0 W0 W0 W0";
 	
 	var expectedObjs = [
 		Wall, Wall, Wall, Wall, Wall,
@@ -35,29 +41,31 @@
 		u, u, u, u, u,
 	];
 	
-	var fakeMap = {
-		grid: [],
-		h_size: 0,
-		v_size: 0,
-		colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
-		neutralColor: Color.GRAY
-	};
-	MapGenerator.openLevel(fakeMap, null, 0, 0, lvl1);
-	
-	console.assertEq(fakeMap.h_size, 5, "map should have correct width");
-	console.assertEq(fakeMap.v_size, 4, "map should have correct height");
-	for (var i=0; i<fakeMap.grid.length; i++) {
-		console.assert(fakeMap.grid[i].constructor === expectedObjs[i],
-		               "should generate correct objects"+
-		               "("+i+", "+fakeMap.grid[i].constructor.name+" vs "+expectedObjs[i].name+")");
+	[lvl1_clear, lvl1_easy].forEach(function(lvl1) {
+		var fakeMap = {
+			grid: [],
+			h_size: 0,
+			v_size: 0,
+			colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
+			neutralColor: Color.GRAY
+		};
+		MapGenerator.openLevel(fakeMap, null, 0, 0, lvl1);
 		
-		console.assert(fakeMap.grid[i].dir === expectedDirs[i],
-		               "should set correct directions"+
-		               "("+i+", "+fakeMap.grid[i].dir+" vs "+expectedDirs[i]+")");
-		
-		console.assert(fakeMap.grid[i].col === expectedCols[i],
-		               "should give correct colors"+
-		               "("+i+", "+(fakeMap.grid[i].col&&fakeMap.grid[i].col.toString())+
-		               " vs "+(expectedCols[i]&&expectedCols[i].toString())+")");
-	}
+		console.assertEq(fakeMap.h_size, 5, "map should have correct width");
+		console.assertEq(fakeMap.v_size, 4, "map should have correct height");
+		for (var i=0; i<fakeMap.grid.length; i++) {
+			console.assertEq(fakeMap.grid[i].constructor, expectedObjs[i],
+			                 "should generate correct objects"+
+			                 "("+i+", "+fakeMap.grid[i].constructor.name+" vs "+expectedObjs[i].name+")");
+			
+			console.assertEq(fakeMap.grid[i].dir, expectedDirs[i],
+			                 "should set correct directions"+
+			                 "("+i+", "+fakeMap.grid[i].dir+" vs "+expectedDirs[i]+")");
+			
+			console.assertEq(fakeMap.grid[i].col, expectedCols[i],
+			                 "should give correct colors"+
+			                 "("+i+", "+(fakeMap.grid[i].col&&fakeMap.grid[i].col.toString())+
+			                 " vs "+(expectedCols[i]&&expectedCols[i].toString())+")");
+		}
+	});
 })();

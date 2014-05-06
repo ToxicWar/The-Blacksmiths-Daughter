@@ -15,8 +15,9 @@ MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
 }
 
 
-var cellDirMap = {'>': 0, 'v': 1, '<': 2, '^':3};
-var cellTypes = [
+//TODO: обернуть это во что-нибудь
+var clearCellDirMap = {'>': 0, 'v': 1, '<': 2, '^':3};
+var clearCellTypes = [
 	{
 		regEx: /--|\|/,
 		func: function(){ return new Wall() }
@@ -30,11 +31,31 @@ var cellTypes = [
 		func: function(map, player_id, arrow) {
 			var col = player_id==0 ? map.neutralColor : map.colorFor(player_id-1);
 			if (!col) throw new Error("Map doesn't have color for player №"+player_id);
-			return new Cell(cellDirMap[arrow], col);
+			return new Cell(clearCellDirMap[arrow], col);
 		},
 	}
 ];
-function parseLine(map, line, j) {
+
+var easyCellTypes = [
+	{
+		regEx: /W0/,
+		func: function(){ return new Wall() }
+	},
+	{
+		regEx: /__/,
+		func: function(){ return new Hole() },
+	},
+	{
+		regEx: /(\d)(\d)/,
+		func: function(map, player_id, dir) {
+			var col = player_id==0 ? map.neutralColor : map.colorFor(player_id-1);
+			if (!col) throw new Error("Map doesn't have color for player №"+player_id);
+			return new Cell(+dir, col);
+		},
+	}
+];
+
+function parseLine(map, line, j, cellTypes) {
 	var elems = line.split(/\s+/);
 	
 	if (map.h_size > 0) {
@@ -58,9 +79,12 @@ function parseLine(map, line, j) {
 	}
 }
 MapGenerator.openLevel = function(map, grid, h_size, v_size, data) {
+	// эксклюзивнй (с) интеллектуальный (R) литерационно-позиционно-оценочный^TM отпределятор формата.
+	var cellTypes = data.indexOf("W")==-1 ? clearCellTypes : easyCellTypes;
+	
 	var lines = data.split(/\s*\n\s*/);
 	map.v_size = lines.length;
 	for (var j=0; j<lines.length; j++) {
-		parseLine(map, lines[j], j);
+		parseLine(map, lines[j], j, cellTypes);
 	}
 }
