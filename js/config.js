@@ -10,10 +10,10 @@ var gameConf = {
 };
 
 
-var urlParams = location.hash.substr(1).split(",");
+var urlParams = location.hash.match(/size:(\d+),(\d+),(\d+),(\d+)/) || [];
 var pupsConf = {
-	w: urlParams[0] || 13,
-	h: urlParams[1] || 8,
-	cw: urlParams[2] || 78,
-	iw: urlParams[3] || 70
+	w: urlParams[1] || 13,
+	h: urlParams[2] || 8,
+	cw: urlParams[3] || 78,
+	iw: urlParams[4] || 70
 };

@@ -11,19 +11,11 @@ function Map(conf) {
 	var scale = devicePixelRatio;
 	var playersColors = conf.playersColors;
 	var neutralColor = conf.neutralColor;
-	var h_size = conf.h_size || 0;
-	var v_size = conf.v_size || 0;
+	var h_size = 0;//conf.h_size || 0;
+	var v_size = 0;//conf.v_size || 0;
 	
 	// сетка. вообще, надо было её двумерным массиво делать, но уж так пошло...
-	var grid = new Array(h_size * v_size);
-	
-	/*Object.defineProperty(this, "rc", {
-		get: function() {return rc;}
-	});
-	
-	Object.defineProperty(this, "cell_width", {
-		get: function() {return cell_width;}
-	});*/
+	var grid = [];//new Array(h_size * v_size);
 	
 	Object.defineProperties(this, {
 		"grid": {get: function(){ return grid }},
@@ -34,7 +26,7 @@ function Map(conf) {
 	});
 	
 	this.colorFor = function(player_id) {
-		return playerColors[player_id];
+		return playersColors[player_id];
 	}
 	
 	// начальные манипуляции с канвасом

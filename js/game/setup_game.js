@@ -4,6 +4,7 @@ core.on("map-turn-done", function(i, j, color) {
 
 function getMapRandomGenerators() {
 	return [
+		[MapGenerator.sizeFixed, pupsConf.w, pupsConf.h],
 		MapGenerator.cellRandom,
 		MapGenerator.dirMiddleSnake,
 		MapGenerator.wallBorder,
@@ -12,12 +13,19 @@ function getMapRandomGenerators() {
 	];
 }
 
+function tryGetMapDataFromURL() {
+	var m = location.hash.match(/lvl:(.+)/);
+	if (m == null) return null;
+	return decodeURI(m[1]);
+}
+
 function getGenerators(mapData) {
+	if (!mapData) mapData = tryGetMapDataFromURL();
 	if (gameConf.multiplayer || !mapData) {
 		return getMapRandomGenerators()
 	} else {
 		return [
-			[MapGenerator.unpackGrid, mapData]
+			[MapGenerator.openLevel, mapData]
 		];
 	}
 }
@@ -29,8 +37,8 @@ function getPlayersColors() {
 function setupMap(mapData, playerColor) {
 	var map = new Map({
 		canvas: theGameCanvas,
-		h_size: pupsConf.w,
-		v_size: pupsConf.h,
+		//h_size: pupsConf.w,
+		//v_size: pupsConf.h,
 		cell_width: pupsConf.cw,
 		generators: getGenerators(mapData),
 		playersColors: getPlayersColors(),

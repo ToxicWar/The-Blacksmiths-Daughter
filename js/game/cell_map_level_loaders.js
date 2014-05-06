@@ -1,4 +1,7 @@
 //TODO: а нафига сюда grid, h_size и v_size передаются?
+//TODO: по символу на пупс - это конечно круто и компактно, но
+//      нечитаемо чуть менее, чем совсем; да и уровни мелкие.
+//      так что нафиг
 MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
 	var objByString = {};
 	var objs = [Cell, Wall, Hole];

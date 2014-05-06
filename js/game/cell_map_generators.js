@@ -1,5 +1,11 @@
 MapGenerator = {};
 
+MapGenerator.sizeFixed = function(map, grid, _h_size, _v_size, h_size, v_size) {
+	map.h_size = h_size;
+	map.v_size = v_size;
+	map.grid.length = h_size * v_size;
+}
+
 MapGenerator.cellRandom = function(map, grid, h_size, v_size) {
 	for (var i=0; i<grid.length; i++)
 		grid[i] = new Cell(Math.random()*4|0, Color.GRAY);
