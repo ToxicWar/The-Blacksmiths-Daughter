@@ -1,12 +1,17 @@
 // пока здесь, TODO
 (function() {
+	console.assertEq = function(a, b, msg) {
+		if (a === b) return;
+		this.error(msg, a, b);
+	}
+	
 	var u = undefined;
 	var r = Color.RED, g = Color.GREEN, n = Color.GRAY;
 	
 	var lvl1 =
-	"-- -- -- -- --\
-	 |  1v 0^ 0>  |\
-	 |  0< .  2^  |\
+	"-- -- -- -- --\n\
+	 |  1v 0^ 0>  |\n\
+	 |  0< .  2^  |\n\
 	 -- -- -- -- --";
 	
 	var expectedObjs = [
@@ -32,12 +37,15 @@
 	
 	var fakeMap = {
 		grid: [],
+		h_size: 0,
+		v_size: 0,
 		colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
 		neutralColor: Color.GRAY
 	};
 	MapGenerator.openLevel(fakeMap, null, 0, 0, lvl1);
 	
-	console.assert(fakeMap.grid.length == 5*4, "map should have correct size");
+	console.assertEq(fakeMap.h_size, 5, "map should have correct width");
+	console.assertEq(fakeMap.v_size, 4, "map should have correct height");
 	for (var i=0; i<fakeMap.grid.length; i++) {
 		console.assert(fakeMap.grid[i].constructor === expectedObjs[i],
 		               "should generate correct objects"+

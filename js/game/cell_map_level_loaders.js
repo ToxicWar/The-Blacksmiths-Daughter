@@ -58,7 +58,7 @@ function parseLine(map, line, j) {
 	}
 }
 MapGenerator.openLevel = function(map, grid, h_size, v_size, data) {
-	var lines = data.split("\n");
+	var lines = data.split(/\s*\n\s*/);
 	map.v_size = lines.length;
 	for (var j=0; j<lines.length; j++) {
 		parseLine(map, lines[j], j);
