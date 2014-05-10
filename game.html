@@ -1,114 +1,69 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	
-	<link rel="stylesheet" href="css/style.css">
-	<script src="js/core.js"></script>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/core.js"></script>
 </head>
-
 <body scroll="no">
-<div class="wrapper" id="gameScreen">
+    <div class="header">
+        Зачем нам тут пафосно писать ники? Будем только выводить состояние абилок и количество захваченных пупсиков.
+    </div>
+    <div class="content">
+        <div class="battlefield">
+            <canvas id="theGameCanvas"></canvas>
+        </div>
+    </div>
+    <div class="footer">
+        <div id="skills_container">
+            <div class="skill f_l">
+                Абилочка
+            </div>
+            <div class="skill f_l">
+                Абилочка
+            </div>
+        </div>
+    </div>
 
-	<div class="gameHeadDivHeight gameHead">
-		<div class="gameHeadDivHeight headWrap">
-			<div class="gameHeadDivHeight leftPlayers f_l">
-				<div class="players" id="LeftPlayer_1">
-					Волнующий Владимир
-				</div>
-			</div>
-			<div class="gameHeadDivHeight versusImage  f_l">
-				<img id="VS" src="img/vs.png" alt="vs"></img>
-			</div>
-			<div class="gameHeadDivHeight rightPlayers  f_l">
-				<div class="players" id="RightPlayer_1">
-					Сумеречный Колян
-				</div>
-			</div>
-		</div>
-		<div class="list-of-skill">
-			<div class="player-list ">
-				<label for="left-menu-panel" id="left-menu-button"></label>
-				<div class="mini-skills"></div>
-				<div class="mini-skills"></div>
-				<div class="mini-skills"></div>
-			</div>
-			<div class="enemy-list f_r">
-				<div class="mini-skills"></div>
-				<div class="mini-skills"></div>
-				<div class="mini-skills"></div>
-				<label for="right-menu-panel" id="right-menu-button"></label>
-			</div>
-		</div>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <div style="display: none;">
+        <img id="cellArrowImage" src="img/pups/pups-arrow.png" />
+        <img id="cellBackImage" src="img/pups/pups-base.png" />
+        <img id="wallImage" src="img/pups/wall.png" />
+        <script>
+            // пока картинки нет, это будет тут
+            var cellConnectionImage = (function() {
+                var img = document.createElement("canvas");
+                var w = (pupsConf.iw || 16)/2;
+                img.width = img.height = w * devicePixelRatio;
+                var rc = img.getContext("2d");
+                rc.scale(devicePixelRatio, devicePixelRatio);
+                rc.strokeRect(0, 0, w, w);
+                rc.fillStyle = "white";
+                rc.fillRect(0, 1, w, w-2);
+                document.body.appendChild(img);
+                return img;
+            })();
+        </script>
+        <!--	<img id="cellArrowImage" src="./static/pups/pups1.png" />-->
+        <!--	<img id="cellBackImage" src="./static/pups/pups-base.png" />-->
+        <!--	<img id="wallImage" src="./static/pups/pups3.png" />-->
+    </div>
+    <script src="js/game/fps.js"></script>
+    <script src="js/game/color.js"></script>
+    <script src="js/game/cell.js"></script>
+    <script src="js/game/cell_map.js"></script>
+    <script src="js/game/cell_map_generators.js"></script>
+    <script src="js/game/cell_map_level_loaders.js"></script>
+    <script src="js/game/setup_game.js"></script>
+    <script src="js/game/ai.js"></script>
+    <script src="js/game/ability.js"></script>
+    <script src="js/game/tests.js"></script>
 
-	</div>
-	<div class="gameBodyDivHeight gameBody">
-		<form action="#">
-			<input type="checkbox" id="left-menu-panel" />
-			<input type="checkbox" id="right-menu-panel" />
-			<div class="gameBodyDivHeight player-abilities">
-				<center>
-					<div class="abilityButton ABactive" id="leftAbPlayer_1">
-					
-					</div>
-				</center>
-			</div>
-			<div class="gameBodyDivHeight enemy-abilities">
-			<center>
-				<div class="abilityButton ABactive" id="LeftAbPlayer_2">
-				
-				</div>
-			</center>
-		</div>
-		</form>
-		
-		<div class="gameBodyDivHeight battleField  f_l">
-			<canvas id="theGameCanvas"></canvas>
-		</div>
-		
-	</div>
-</div>
-
-<script src="js/config.js"></script>
-<script src="js/utils.js"></script>
-<div style="display: none;">
-	<img id="cellArrowImage" src="img/pups/pups-arrow.png" />
-	<img id="cellBackImage" src="img/pups/pups-base.png" />
-	<img id="wallImage" src="img/pups/wall.png" />
-	<script>
-		// пока картинки нет, это будет тут
-		var cellConnectionImage = (function() {
-			var img = document.createElement("canvas");
-			var w = (pupsConf.iw || 16)/2;
-			img.width = img.height = w * devicePixelRatio;
-			var rc = img.getContext("2d");
-			rc.scale(devicePixelRatio, devicePixelRatio);
-			rc.strokeRect(0, 0, w, w);
-			rc.fillStyle = "white";
-			rc.fillRect(0, 1, w, w-2);
-			document.body.appendChild(img);
-			return img;
-		})();
-	</script>
-<!--	<img id="cellArrowImage" src="./static/pups/pups1.png" />-->
-<!--	<img id="cellBackImage" src="./static/pups/pups-base.png" />-->
-<!--	<img id="wallImage" src="./static/pups/pups3.png" />-->
-</div>
-<script src="js/game/fps.js"></script>
-<script src="js/game/color.js"></script>
-<script src="js/game/cell.js"></script>
-<script src="js/game/cell_map.js"></script>
-<script src="js/game/cell_map_generators.js"></script>
-<script src="js/game/cell_map_level_loaders.js"></script>
-<script src="js/game/setup_game.js"></script>
-<script src="js/game/ai.js"></script>
-<script src="js/game/ability.js"></script>
-<script src="js/game/tests.js"></script>
-
-<script>
-// noting to do here.
-// see core.js.
-// and setup_game.js.
-</script>
+    <script>
+        // noting to do here.
+        // see core.js.
+        // and setup_game.js.
+    </script>
 </body>
 </html>
