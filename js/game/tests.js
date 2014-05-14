@@ -8,6 +8,17 @@
 	var u = undefined;
 	var r = Color.RED, g = Color.GREEN, n = Color.GRAY;
 	
+	function makeFakeMap() {
+		return {
+			grid: [],
+			h_size: 0,
+			v_size: 0,
+			colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
+			neutralColor: Color.GRAY
+		};
+	}
+	
+	
 	var lvl1_clear =
 	"-- -- -- -- --\n\
 	 |  1v 0^ 0>  |\n\
@@ -42,13 +53,7 @@
 	];
 	
 	[lvl1_clear, lvl1_easy].forEach(function(lvl1) {
-		var fakeMap = {
-			grid: [],
-			h_size: 0,
-			v_size: 0,
-			colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
-			neutralColor: Color.GRAY
-		};
+		var fakeMap = makeFakeMap();
 		MapGenerator.openLevel(fakeMap, null, 0, 0, lvl1);
 		
 		console.assertEq(fakeMap.h_size, 5, "map should have correct width");
@@ -68,4 +73,12 @@
 			                 " vs "+(expectedCols[i]&&expectedCols[i].toString())+")");
 		}
 	});
+	
+	
+	try {
+		MapGenerator.openLevel(makeFakeMap(), null, 0, 0, "W0 W0\n");
+		MapGenerator.openLevel(makeFakeMap(), null, 0, 0, "-- --\n");
+	} catch(e) {
+		console.error("trailing newline should not cause exceptions:\n", e);
+	}
 })();

@@ -82,6 +82,8 @@ function parseLine(map, line, j, cellTypes) {
 	}
 }
 MapGenerator.openLevel = function(map, grid, h_size, v_size, data) {
+	data = data.trim();
+	
 	// эксклюзивнй (с) интеллектуальный (R) литерационно-позиционно-оценочный^TM отпределятор формата.
 	var cellTypes = data.indexOf("W")==-1 ? clearCellTypes : easyCellTypes;
 	

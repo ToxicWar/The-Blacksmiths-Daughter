@@ -22,7 +22,7 @@ function tryGetMapDataFromURL() {
 function getGenerators(mapData) {
 	if (!mapData) mapData = tryGetMapDataFromURL();
 	if (gameConf.multiplayer || !mapData) {
-		return getMapRandomGenerators()
+		return getMapRandomGenerators();
 	} else {
 		return [
 			[MapGenerator.openLevel, mapData]
@@ -139,15 +139,33 @@ function setupMap(mapData, playerColor) {
 
 
 core.on("window-onload", function() {
-	var map = setupMap();
-	var bots = [new TestAi(map, Color.RED, function() {
-		alert("Ах ты такой разэдакий! Давай ещё раз.");
-	})];
-	core.on("map-animation-end", function(color) {
-		for (var i=0; i<bots.length; i++) {
-			if (bots[i].color.valueOf() != color.valueOf()) continue;
-			bots[i].turn(map);
+	
+	var level_id = 0;
+	var m = location.hash.match(/n:(\d+)/);
+	if (m != null) level_id = +m[1];
+	
+	XHR('GET', "./res/lvl"+level_id+".txt", null, function(code, data) {
+		// ноль? да, ноль. оно при загрузке с file:/// возвращает туда ноль
+		// TODO: убрать проверку на ноль потом отсюда нафиг
+		if (code != 200 && code != 0) {
+			alert("Левел луадинг фалед!\n"+code+": "+data);
+			return;
 		}
+		
+		var map = setupMap(data);
+		
+		var bots = [new TestAi(map, Color.RED, function() {
+			alert("Ах ты такой разэдакий! Давай ещё раз.");
+			location.hash = "n:"+(level_id+1); // изменение якоря НЕ перезагружает страницу!
+			location.reload();
+		})];
+		
+		core.on("map-animation-end", function(color) {
+			for (var i=0; i<bots.length; i++) {
+				if (bots[i].color.valueOf() != color.valueOf()) continue;
+				bots[i].turn(map);
+			}
+		});
 	});
 	// сокеты? а чего, оно всё равно не работает
 });
