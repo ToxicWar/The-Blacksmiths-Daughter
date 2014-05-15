@@ -35,7 +35,7 @@ Control.add = function(opts) {
 			var t = e.touches[0];
 			prevent = singleDown(t.pageX-box.left, t.pageY-box.top);
 		} else {
-			if (touch_numb == 1) prevent = singleUp(false);
+			if (touch_numb == 1) prevent = singleUp(true);
 			var t0 = e.touches[0], t1 = e.touches[1];
 			prevent += doubleDown(
 				t0.pageX-box.left, t0.pageY-box.top,
@@ -70,11 +70,14 @@ Control.add = function(opts) {
 		if (e.touches.length > 1) return;
 		
 		if (e.touches.length == 0) {
-			singleUp(true) && e.preventDefault();
+			(touch_numb == 2  // если подняли оба пальца сразу
+				? doubleUp(false)
+				: singleUp(false)
+			) && e.preventDefault();
 		} else {
 			var box = startElem.getAbsoluteClientRect();
 			var t = e.touches[0];
-			(doubleUp(false) + singleDown(t.pageX-dx, t.pageY-dy)) && e.preventDefault();
+			(doubleUp(true) + singleDown(t.pageX-box.left, t.pageY-box.top)) && e.preventDefault();
 		}
 		
 		touch_numb = e.touches.length;
