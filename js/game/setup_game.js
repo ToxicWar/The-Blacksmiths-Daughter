@@ -37,8 +37,6 @@ function getPlayersColors() {
 function setupMap(mapData, playerColor) {
 	var map = new Map({
 		canvas: theGameCanvas,
-		//h_size: pupsConf.w,
-		//v_size: pupsConf.h,
 		cell_width: pupsConf.cw,
 		generators: getGenerators(mapData),
 		playersColors: getPlayersColors(),
@@ -49,12 +47,13 @@ function setupMap(mapData, playerColor) {
 	
 	
 	var grab_x = NaN, grab_y = NaN, grab_len = NaN;
-	function grab(x, y) {
+	function singleDown(x, y) {
 		grab_x = x;
 		grab_y = y;
 		grab_len = 0;
+		return true;
 	}
-	function move(x, y) {
+	function singleMove(x, y) {
 		if (grab_x != grab_x) return;
 		grab_len += pointDistance(x, y, grab_x, grab_y);
 		/*if (grab_len >= 5) {
@@ -71,30 +70,27 @@ function setupMap(mapData, playerColor) {
 		}*/
 		grab_x = x;
 		grab_y = y;
+		return true;
 	}
-	function drop() {
+	function singleUp(is_switching) {
 		if (grab_x != grab_x) return;
-		if (grab_len < 5) {
+		if (grab_len < 5 && !is_switching) {
 			map.doTurnReal(grab_x, grab_y, 1, playerColor);
 		}
 		grab_x = grab_y = grab_len = NaN;
+		return true;
 	}
 	
+	function doubleDown(x0, y0, x1, y1) {
+		return true;
+	}
+	function doubleMove(x0, y0, x1, y1) {
+		return true;
+	}
+	function doubleUp(is_switching) {
+		return true;
+	}
 	
-	theGameCanvas.onmousedown = function(e) {
-		e.preventDefault();
-		var pos = getPos(theGameCanvas);
-		grab(e.pageX-pos.x, e.pageY-pos.y);
-	}
-	theGameCanvas.onmousemove = function(e) {
-		e.preventDefault();
-		var pos = getPos(theGameCanvas);
-		move(e.pageX-pos.x, e.pageY-pos.y);
-	}
-	theGameCanvas.onmouseup = function(e) {
-		e.preventDefault();
-		drop();
-	}
 	theGameCanvas.oncontextmenu = function(e) {
 		e.preventDefault();
 		var pos = getPos(theGameCanvas);
@@ -105,23 +101,21 @@ function setupMap(mapData, playerColor) {
 		]);
 	}
 	
-	theGameCanvas.ontouchstart = function(e) {
-		e.preventDefault();
-		e = e.touches[0];
-		var pos = getPos(theGameCanvas);
-		grab(e.pageX-pos.x, e.pageY-pos.y);
-	}
-	theGameCanvas.ontouchmove = function(e) {
-		e.preventDefault();
-		e = e.touches[0];
-		var pos = getPos(theGameCanvas);
-		move(e.pageX-pos.x, e.pageY-pos.y);
-	}
-	theGameCanvas.ontouchend = function(e) {
-		e.preventDefault();
-		drop();
-	}
-
+	Control.add({
+		singleDown: singleDown,
+		singleMove: singleMove,
+		singleUp: singleUp,
+		
+		doubleDown: doubleDown,
+		doubleMove: doubleMove,
+		doubleUp: doubleUp,
+		
+		//wheelRot: wheelRot,
+		
+		startElem: theGameCanvas,
+		stopElem: document.body
+	});
+	
 	window.benchmark = false; // DEBUG
 	window.fps = new FPS(function(fps){ benchmark && console.log(fps) }); // DEBUG
 	map.drawAll();

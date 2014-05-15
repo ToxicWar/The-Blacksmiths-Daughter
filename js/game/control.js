@@ -4,24 +4,22 @@ Control.add = function(opts) {
 	var singleMove = opts.singleMove;
 	var singleUp = opts.singleUp;
 	
-	var doubleDown = doubleDown;
-	var doubleMove = doubleMove;
-	var doubleUp = doubleUp;
+	var doubleDown = opts.doubleDown;
+	var doubleMove = opts.doubleMove;
+	var doubleUp = opts.doubleUp;
 	
 	var wheelRot = opts.wheelRot;
 	
 	var startElem = opts.startElem;
 	var stopElem = opts.stopElem;
 	
-	var pos = getPos(stopElem);
-	var dx = pos.x;
-	var dy = pos.y;
-	
 	function grab(e) {
-		singleDown(e.pageX-dx, e.pageY-dy) && e.preventDefault();
+		var box = startElem.getAbsoluteClientRect();
+		singleDown(e.pageX-box.left, e.pageY-box.top) && e.preventDefault();
 	}
 	function move(e) {
-		singleMove(e.pageX-dx, e.pageY-dy) && e.preventDefault();
+		var box = startElem.getAbsoluteClientRect();
+		singleMove(e.pageX-box.left, e.pageY-box.top) && e.preventDefault();
 	}
 	function drop(e) {
 		singleUp(false) && e.preventDefault();
@@ -30,17 +28,18 @@ Control.add = function(opts) {
 	touch_numb = 0;
 	function touchStart(e) {
 		if (e.touches.length > 2) return;
+		var box = startElem.getAbsoluteClientRect();
 		var prevent = false;
 		
 		if (e.touches.length == 1) {
 			var t = e.touches[0];
-			prevent = singleDown(t.pageX-dx, t.pageY-dy);
+			prevent = singleDown(t.pageX-box.left, t.pageY-box.top);
 		} else {
 			if (touch_numb == 1) prevent = singleUp(false);
 			var t0 = e.touches[0], t1 = e.touches[1];
 			prevent += doubleDown(
-				t0.pageX-dx, t0.pageY-dy,
-				t1.pageX-dx, t1.pageY-dy
+				t0.pageX-box.left, t0.pageY-box.top,
+				t1.pageX-box.left, t1.pageY-box.top
 			);
 		}
 
@@ -51,17 +50,18 @@ Control.add = function(opts) {
 	function touchMove(e) {
 		if (e.touches.length > 2) return;
 		if (e.touches.length != touch_numb) return; //тут что-то нетак
+		var box = startElem.getAbsoluteClientRect();
 		
 		if (e.touches.length == 1) {
 			var t = e.touches[0];
-			singleMove(t.pageX-dx, t.pageY-dy) && e.preventDefault();
+			singleMove(t.pageX-box.left, t.pageY-box.top) && e.preventDefault();
 		} else {
 			var t0 = e.touches[0], t1 = e.touches[1];
 			//мобильная Опера 12.04 в передёт тачи сюда в обратном порядке
 			if (t0.identifier > t1.identifier) {var t=t0; t0=t1; t1=t;}
 			doubleMove(
-				t0.pageX-dx, t0.pageY-dy,
-				t1.pageX-dx, t1.pageY-dy
+				t0.pageX-box.left, t0.pageY-box.top,
+				t1.pageX-box.left, t1.pageY-box.top
 			) && e.preventDefault();
 		}
 	}
@@ -72,6 +72,7 @@ Control.add = function(opts) {
 		if (e.touches.length == 0) {
 			singleUp(true) && e.preventDefault();
 		} else {
+			var box = startElem.getAbsoluteClientRect();
 			var t = e.touches[0];
 			(doubleUp(false) + singleDown(t.pageX-dx, t.pageY-dy)) && e.preventDefault();
 		}
@@ -79,15 +80,15 @@ Control.add = function(opts) {
 		touch_numb = e.touches.length;
 	}
 	
-	startElem.on('mousedown', grab);
-	startElem.on('mousemove', move);
-	stopElem.on('mouseup', drop);
-	startElem.on('touchstart', touchStart);
-	startElem.on('touchmove', touchMove);
-	stopElem.on('touchend', touchEnd);
+	startElem.addEventListener('mousedown', grab, true);
+	startElem.addEventListener('mousemove', move, true);
+	stopElem.addEventListener('mouseup', drop, true);
+	startElem.addEventListener('touchstart', touchStart, true);
+	startElem.addEventListener('touchmove', touchMove, true);
+	stopElem.addEventListener('touchend', touchEnd, true);
 	
 	if (wheelRot) {
-		startElem.on('mousewheel',     function(e){ wheelRot(e.wheelDelta/120) && e.preventDefault(); });
-		startElem.on('DOMMouseScroll', function(e){ wheelRot(e.detail)         && e.preventDefault(); });
+		startElem.addEventListener('mousewheel',     function(e){ wheelRot(e.wheelDelta/120) && e.preventDefault(); }, true);
+		startElem.addEventListener('DOMMouseScroll', function(e){ wheelRot(e.detail)         && e.preventDefault(); }, true);
 	}
 }
