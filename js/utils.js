@@ -29,6 +29,13 @@ Array.prototype.random = function() {
 	return this[Math.random()*this.length|0];
 }
 
+HTMLElement.prototype.getAbsoluteClientRect = function() {
+	var box = this.getBoundingClientRect();
+	box.left += window.pageXOffset;
+	box.top += window.pageYOffset;
+	return box;
+}
+
 window.onerror = function(errorMsg, url, lineNumber) {
 	var msg = "Error happened on <"+url+
 		"\n> on line "+lineNumber+":\n"+
