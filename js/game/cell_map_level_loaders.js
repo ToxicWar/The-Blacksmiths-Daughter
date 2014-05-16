@@ -1,22 +1,3 @@
-//TODO: по символу на пупс - это конечно круто и компактно, но
-//      нечитаемо чуть менее, чем совсем; да и уровни мелкие.
-//      так что нафиг
-MapGenerator.unpackGrid = function(map, data) {
-	var objByString = {};
-	var objs = [Cell, Wall, Hole];
-	
-	for (var i=0; i<objs.length; i++) {
-		for (var j=0; j<objs[i].prototype.strings.length; j++) {
-			objByString[objs[i].prototype.strings[j]] = objs[i];
-		}
-	}
-	
-	for (var i=0; i<data.length; i++) {
-		map.grid[i] = objByString[data[i]].fromString(data[i]);
-	}
-}
-
-
 //TODO: обернуть это во что-нибудь
 var clearCellDirMap = {'>': 0, 'v': 1, '<': 2, '^':3};
 var clearCellTypes = [

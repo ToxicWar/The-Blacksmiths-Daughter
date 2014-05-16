@@ -75,16 +75,6 @@ Cell.prototype.trigger = function(map, i, j, triggerColor, do_not_chain) {
 	return true;
 }
 
-Cell.prototype.toString = function() {
-	return this.dir+"";
-}
-
-Cell.prototype.strings = ["0", "1", "2", "3"];
-
-Cell.fromString = function(str) {
-	return new Cell(parseInt(str), Color.GRAY);
-}
-
 
 function Wall() {}
 Wall.prototype.image = wallImage;
@@ -95,25 +85,12 @@ Wall.prototype.draw = function(rc) {
 	var iw = this.image_width;
 	rc.drawImage(this.image, -iw/2, -iw/2, iw, iw);
 }
-Wall.prototype.toString = function() {
-	return "W";
-}
-Wall.prototype.strings = ["W"];
-Wall.fromString = function() {
-	return new Wall();
-}
 
 
 function Hole() {}
 Hole.prototype.rotate = function() {}
 Hole.prototype.trigger = function() { return false }
-Hole.prototype.toString = function() {
-	return "H";
-}
-Hole.prototype.strings = ["H"];
-Hole.fromString = function() {
-	return new Hole();
-}
+
 
 // объекты, отвечающие за анимацию ячейки
 // update(map) - вызывается на каждом кадре анимации
