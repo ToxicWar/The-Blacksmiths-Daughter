@@ -42,9 +42,11 @@ function Map(conf) {
 	
 	this.applyGenerator = function(gen) {
 		if (gen instanceof Function) {
-			gen(this, grid, h_size, v_size);
+			gen(this);
 		} else {
-			gen[0].apply(gen, [this, grid, h_size, v_size].concat(gen.slice(1)));
+			var genItself = gen[0];
+			gen[0] = this; // now it's arguments
+			genItself.apply(null, gen);
 		}
 	}
 	

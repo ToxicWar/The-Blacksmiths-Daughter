@@ -1,8 +1,7 @@
-//TODO: а нафига сюда grid, h_size и v_size передаются?
 //TODO: по символу на пупс - это конечно круто и компактно, но
 //      нечитаемо чуть менее, чем совсем; да и уровни мелкие.
 //      так что нафиг
-MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
+MapGenerator.unpackGrid = function(map, data) {
 	var objByString = {};
 	var objs = [Cell, Wall, Hole];
 	
@@ -13,7 +12,7 @@ MapGenerator.unpackGrid = function(map, grid, h_size, v_size, data) {
 	}
 	
 	for (var i=0; i<data.length; i++) {
-		grid[i] = objByString[data[i]].fromString(data[i]);
+		map.grid[i] = objByString[data[i]].fromString(data[i]);
 	}
 }
 
@@ -81,7 +80,8 @@ function parseLine(map, line, j, cellTypes) {
 		if (!found) throw new Error("Unkown map element: "+elems[i]);
 	}
 }
-MapGenerator.openLevel = function(map, grid, h_size, v_size, data) {
+
+MapGenerator.openLevel = function(map, data) {
 	data = data.trim();
 	
 	// эксклюзивнй (с) интеллектуальный (R) литерационно-позиционно-оценочный^TM отпределятор формата.

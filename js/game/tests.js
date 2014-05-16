@@ -54,7 +54,7 @@
 	
 	[lvl1_clear, lvl1_easy].forEach(function(lvl1) {
 		var fakeMap = makeFakeMap();
-		MapGenerator.openLevel(fakeMap, null, 0, 0, lvl1);
+		MapGenerator.openLevel(fakeMap, lvl1);
 		
 		console.assertEq(fakeMap.h_size, 5, "map should have correct width");
 		console.assertEq(fakeMap.v_size, 4, "map should have correct height");
@@ -76,8 +76,8 @@
 	
 	
 	try {
-		MapGenerator.openLevel(makeFakeMap(), null, 0, 0, "W0 W0\n");
-		MapGenerator.openLevel(makeFakeMap(), null, 0, 0, "-- --\n");
+		MapGenerator.openLevel(makeFakeMap(), "W0 W0\n");
+		MapGenerator.openLevel(makeFakeMap(), "-- --\n");
 	} catch(e) {
 		console.error("trailing newline should not cause exceptions:\n", e);
 	}
