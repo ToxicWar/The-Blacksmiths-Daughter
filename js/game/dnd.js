@@ -1,4 +1,4 @@
-function DragObject(element) {
+function DragObject(element, skill) {
     element.dragObject = this;
 
     dragMaster.makeDraggable(element);
@@ -11,20 +11,20 @@ function DragObject(element) {
         rememberPosition = {top: s.top, left: s.left, position: s.position};
         s.position = 'absolute';
 
-        mouseOffset = offset
+        mouseOffset = offset;
     };
 
     this.hide = function() {
-        element.style.display = 'none'
+        element.style.display = 'none';
     };
 
     this.show = function() {
-        element.style.display = ''
+        element.style.display = '';
     };
 
     this.onDragMove = function(x, y) {
         element.style.top =  y - mouseOffset.y +'px';
-        element.style.left = x - mouseOffset.x +'px'
+        element.style.left = x - mouseOffset.x +'px';
     };
 
     this.onDragSuccess = function(dropTarget) { };
@@ -37,11 +37,11 @@ function DragObject(element) {
     };
 
     this.toString = function() {
-        return element.id
+        return element.id;
     };
 
     this.skill = function() {
-        return element.dataset.skill
+        return skill;
     };
 }
 
@@ -49,24 +49,25 @@ function DropTarget(element) {
 
     element.dropTarget = this;
 
-    this.canAccept = function(dragObject) {
+    this.canAccept = function(relX, relY, dragObject) {
         return true
     };
 
-    this.accept = function(dragObject) {
+    this.accept = function(relX, relY, dragObject) {
         this.onLeave();
 
         dragObject.hide();
 
-        core.emit('use-skill', dragObject.skill());
+        //core.emit('use-skill', dragObject.skill(), relX, relY);
+        gameMaster.performAbilityReal(dragObject.skill(), relX, relY);
     };
 
     this.onLeave = function() {
-        element.className =  ''
+        element.classList.remove('uponMe');
     };
 
     this.onEnter = function() {
-        element.className = 'uponMe'
+        element.classList.add('uponMe');
     };
 
     this.toString = function() {
@@ -135,38 +136,35 @@ var dragMaster = (function() {
         return false
     }
 
-    function mouseUp(){
+    function mouseUp(e){
         if (!dragObject) { // (1)
             mouseDownAt = null
         } else {
             // (2)
             if (currentDropTarget) {
-                currentDropTarget.accept(dragObject);
-                dragObject.onDragSuccess(currentDropTarget)
+                currentDropTarget.accept(e.pageX, e.pageY, dragObject);
+                dragObject.onDragSuccess(e.pageX, e.pageY, currentDropTarget);
             } else {
-                dragObject.onDragFail()
+                dragObject.onDragFail();
             }
 
-            dragObject = null
+            dragObject = null;
         }
 
         // (3)
-        removeDocumentEventHandlers()
+        removeDocumentEventHandlers();
     }
 
     function getMouseOffset(target, x, y) {
-        var docPos	= getOffset(target);
-        return {x:x - docPos.left, y:y - docPos.top}
+        var docPos= getOffset(target);
+        return {x:x - docPos.left, y:y - docPos.top};
     }
 
     function getCurrentTarget(e) {
         // спрятать объект, получить элемент под ним - и тут же показать опять
 
-        if (navigator.userAgent.match('MSIE') || navigator.userAgent.match('Gecko')) {
-            var x=e.clientX, y=e.clientY
-        } else {
-            var x=e.pageX, y=e.pageY
-        }
+        var x=e.pageX, y=e.pageY;
+
         // чтобы не было заметно мигание - максимально снизим время от hide до show
         dragObject.hide();
         var elem = document.elementFromPoint(x,y);
@@ -175,14 +173,14 @@ var dragMaster = (function() {
         // найти самую вложенную dropTarget
         while (elem) {
             // которая может принять dragObject
-            if (elem.dropTarget && elem.dropTarget.canAccept(dragObject)) {
+            if (elem.dropTarget && elem.dropTarget.canAccept(x, y, dragObject)) {
                 return elem.dropTarget
             }
-            elem = elem.parentNode
+            elem = elem.parentNode;
         }
 
         // dropTarget не нашли
-        return null
+        return null;
     }
 
     function addDocumentEventHandlers() {
@@ -258,10 +256,17 @@ function getOffsetSum(elem) {
 }
 
 core.on('window-onload', function() {
-    var dragObjects = document.getElementById('skills_container').querySelectorAll('.skill');
-    for(var i=0; i<dragObjects.length; i++) {
-        new DragObject(dragObjects[i])
-    }
+    // TODO: move declaration somewhere else (to LocalPlayer for example)
+    var abilities = [new Ability.Bomb(2, 1), new Ability.Overcharge(5)];
+
+    abilities.forEach(function(ability) {
+        var dragElem = document.createElement('div');
+        dragElem.className = "skill f_l";
+        dragElem.textContent = ability.constructor.name;
+        
+        new DragObject(dragElem, ability);
+        skills_container.appendChild(dragElem);
+    });
 
     new DropTarget(document.getElementById('theGameCanvas'));
 });

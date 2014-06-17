@@ -9,8 +9,8 @@ function Map(conf) {
 	var rc;
 	var cell_width = conf.cell_width;
 	var scale = devicePixelRatio;
-	var playersColors = conf.playersColors;
-	var neutralColor = conf.neutralColor;
+	//var playersColors = conf.playersColors;
+	//var neutralColor = conf.neutralColor;
 	var h_size = 0;//conf.h_size || 0;
 	var v_size = 0;//conf.v_size || 0;
 	
@@ -21,13 +21,13 @@ function Map(conf) {
 		"grid": {get: function(){ return grid }},
 		"h_size": {get: function(){ return h_size }, set: function(h){ h_size=h }},
 		"v_size": {get: function(){ return v_size }, set: function(v){ v_size=v }},
-		"playersColors": {get: function(){ return playersColors }},
-		"neutralColor": {get: function(){ return neutralColor }},
+		//"playersColors": {get: function(){ return playersColors }},
+		//"neutralColor": {get: function(){ return neutralColor }},
 	});
 	
-	this.colorFor = function(player_id) {
-		return playersColors[player_id];
-	}
+	//this.colorFor = function(player_id) {
+	//	return playersColors[player_id];
+	//}
 	
 	// начальные манипуляции с канвасом
 	this.resetCanvas = function() {
@@ -127,9 +127,9 @@ function Map(conf) {
 	// перерисовать в x и y
 	// real - не потому что числа дробные (хотя и такие можно),
 	// а потому что реальные (т.е. экранные) координаты
-	this.drawAtReal = function(x, y) {
+	/*this.drawAtReal = function(x, y) {
 		this.drawAt(x/cell_width|0, y/cell_width|0);
-	}
+	}*/
 	
 	this.triggerAt = function(i, j, color, do_not_chain) {
 		return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
@@ -141,6 +141,7 @@ function Map(conf) {
 	var firedAnimationEnd = false;
 	// добавление в очередь на перерисовку; для и иже с ними //кого?
 	this.addUpdatingSomethingAt = function(i, j, obj) {
+		if (this.somethingUpdatesAt(i, j)) throw new Error("Already animating at ("+i+","+j+")"); //DEBUG
 		updatingCells[i + j*h_size] = obj;
 		firedAnimationEnd = false;
 	}
@@ -171,7 +172,7 @@ function Map(conf) {
 		}
 		
 		if (keys.length == 0 && !firedAnimationEnd) {
-			core.emit("map-animation-end", [playersColors[0]]);
+			core.emit("map-animation-end", []);
 			firedAnimationEnd = true;
 		}
 	}
@@ -181,13 +182,9 @@ function Map(conf) {
 		this.cellAt(i, j).rotate(map, i, j, (cell.dir+4+dir_delta)%4);
 	}
 	// одна из основных торчащих наружу функций
-	this.rotateAtRealBy = function(x, y, delta) {
+	/*this.rotateAtRealBy = function(x, y, delta) {
 		rotateBy(x/cell_width|0, y/cell_width|0, delta);
-	}
-	
-	this.doTurnReal = function(x, y, delta, color) {
-		this.doTurn(x/cell_width|0, y/cell_width|0, delta, color);
-	}
+	}*/
 	
 	this.doTurn = function(i, j, delta, color) {
 		if (map.stillAnimating()) return false;
@@ -195,14 +192,18 @@ function Map(conf) {
 		var cell = this.cellAt(i, j);
 		
 		if (!cell.col || cell.col.valueOf() != color.valueOf()) return false;
-		if (playersColors[0].valueOf() != color.valueOf()) return false;
+		//if (playersColors[0].valueOf() != color.valueOf()) return false;
 		
 		cell.rotate(map, i, j, (cell.dir+4+delta)%4);
-		playersColors.push(playersColors.shift());
-		core.emit("map-turn-done", [i, j, playersColors[0]]);
+		//playersColors.push(playersColors.shift());
+		//core.emit("map-turn-done", [i, j]);
 		
 		return true;
 	}
+	
+	/*this.doTurnReal = function(x, y, delta, color) {
+		this.doTurn(x/cell_width|0, y/cell_width|0, delta, color);
+	}*/
 	
 	// для тестирования
 	this.hackColor = function(i, j, col) {
@@ -216,14 +217,15 @@ function Map(conf) {
 	}
 	
 	
-	core.on("map-perform-ability", function() {
+	/*core.on("map-ability-perform", function() {
 		//arguments.__proto__ = []; // лёгким движением руки брюки превращаются... в элегантнй массив!
 		//// каким-то чудом оно работает. как минимум в Хроме. и в ФФ.
 		//var abilityFunc = arguments.shift();
-		var abilityFunc = arguments[0];
+		var ability = arguments[0];
 		arguments[0] = map;
-		abilityFunc.apply(null, arguments);
-	});
+		var res = ability.act.apply(ability, arguments);
+		core.emit("map-ability-performed", ability, res);
+	});*/
 	this.applyGenerators();
 	this.resetCanvas();
 }

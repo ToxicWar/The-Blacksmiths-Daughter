@@ -43,17 +43,18 @@ function FakeMap(map) {
 }
 
 
-function TestAi(map, color, callback) {
+function TestAi(gm, color) {
 	this.color = color;
 	
+	var map = gm.map;
 	var fakeMap = new FakeMap(map);
 	var triggerablePositions = [];
 	
-	this.turn = function(map) {
+	this.gotTurn = function() {
 		var best_pos = findBestActionForNow();
 		
 		if (triggerablePositions.length == 0) {
-			if (callback) callback();
+			core.emit("player-loss", [this]);
 			return;
 		}
 		
@@ -67,7 +68,10 @@ function TestAi(map, color, callback) {
 			best_pos = triggerablePositions.random();
 		}
 		
-		map.doTurn(best_pos%fakeMap.h_size, best_pos/fakeMap.h_size|0, 1, color);
+		var i = best_pos%fakeMap.h_size;
+		var j = best_pos/fakeMap.h_size|0;
+		var done = gm.doTurn(i, j, this);
+		if (!done) throw new Error("Failed to do desired turn at "+i+", "+j+" with "+color.toString()); //DEBUG
 	}
 	
 	function findBestActionForNow() {
