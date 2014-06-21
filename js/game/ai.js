@@ -54,8 +54,8 @@ function TestAi(gm, color) {
 		var best_pos = findBestActionForNow();
 		
 		if (triggerablePositions.length == 0) {
-			core.emit("player-loss", [this]);
-			return;
+			throw new Error("No triggerable cells found. "+
+				"Have I missed any or GameMaster forgot to stop battle?");
 		}
 		
 		if (best_pos == -1) {

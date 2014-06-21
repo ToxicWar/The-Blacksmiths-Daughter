@@ -26,7 +26,7 @@ var Ability = (function() {
 		this.n = n;
 	}
 	
-	Overcharge.prototype._getAppropriateCell = function(map, ci, cj, playerColor) {
+	Overcharge.prototype._getCellIfAppropriate = function(map, ci, cj, playerColor) {
 		var cell = map.safeCellAt(ci, cj);
 		// && cell.looksAt
 		if (!cell || !cell.col || cell.col.valueOf()!=playerColor.valueOf()) return null;
@@ -34,11 +34,11 @@ var Ability = (function() {
 	}
 	
 	Overcharge.prototype.hover = function(map, ci, cj, playerColor) {
-		return !!this._getAppropriateCell(map, ci, cj, playerColor);
+		return !!this._getCellIfAppropriate(map, ci, cj, playerColor);
 	}
 	
 	Overcharge.prototype.act = function(map, ci, cj, playerColor) {
-		var cell = this._getAppropriateCell(map, ci, cj, playerColor);
+		var cell = this._getCellIfAppropriate(map, ci, cj, playerColor);
 		if (!cell) return false;
 		
 		var delta = cell.looksAt;

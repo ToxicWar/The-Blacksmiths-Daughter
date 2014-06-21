@@ -1,5 +1,11 @@
-core.on("game-turn-done", function(turnColor, curColor) {
-	console.log("turn done by ", turnColor.toString(), ", now turn of ", curColor.toString());
+core.on("game-turn-done", function(turnPlayer, curPlayer) {
+	console.log(
+		"turn done by ", turnPlayer.color.toString(),
+		", now turn of ", curPlayer.color.toString());
+});
+
+core.on("game-player-loss", function(player) {
+	alert(player.color.toString()+" out");
 });
 
 
@@ -11,6 +17,7 @@ function GameMaster(configProvider) {
 	this.map = null;
 	this.players = null;
 	this.turn_number = 0;
+	this.cur_player_id = 0;
 	
 	this.benchmark = false; // DEBUG
 	
@@ -29,12 +36,12 @@ GameMaster.prototype.isReady = function() {
 }
 
 GameMaster.prototype.currentPlayer = function() { //TODO: геттеры-сеттеры?
-	return this.players[this.turn_number % this.players.length];
+	return this.players[this.cur_player_id];
 }
 
 GameMaster.prototype.previousPlayer = function() {
-	if (this.turn_number == 0) return null;
-	return this.players[(this.turn_number-1) % this.players.length];
+	var id = this.cur_player_id==0 ? this.players.length-1 : this.cur_player_id-1;
+	return this.players[id];
 }
 
 
@@ -53,12 +60,21 @@ GameMaster.prototype.setup = function(generators, players) {
 	
 	this.players = players.map(function(p) {
 		//TODO: мб http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-		return new p[0](gm, p[1]);
+		return new p[0](gm, p[1]); //function, color
 	});
 	
 	core.on("map-animation-end", function() {
+		var player = gm.currentPlayer();
+		
+		if (gm.map.hasColorsLike(player.color)) {
+			player.gotTurn();
+		} else {
+			gm.players.splice(gm.cur_player_id, 1);
+			if (gm.cur_player_id == gm.players.length) gm.cur_player_id = 0;
+			core.emit("game-player-loss", [player]);
+		}
+		
 		core.emit("game-animation-end", [gm.previousPlayer(), gm.currentPlayer()]);
-		gm.currentPlayer().gotTurn();
 	});
 	
 	var grab_x = NaN, grab_y = NaN, grab_len = NaN;
@@ -148,6 +164,8 @@ GameMaster.prototype.doTurn = function(i, j, player) {
 	
 	if (done) {
 		this.turn_number++;
+		this.cur_player_id++;
+		if (this.cur_player_id == this.players.length) this.cur_player_id = 0;
 		core.emit("game-turn-done", [this.previousPlayer(), this.currentPlayer()]);
 	}
 	return done;
@@ -172,8 +190,7 @@ function LocalPlayer(gm, color) {
 	this.color = color;
 	
 	this.gotTurn = function() {
-		//TODO: проверить тут, есть ли, чем ещё ходить
-		//      иф (нечем) core.emit("player-loss", [this]);
+		
 	}
 }
 

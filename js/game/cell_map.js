@@ -29,6 +29,13 @@ function Map(conf) {
 	//	return playersColors[player_id];
 	//}
 	
+	this.hasColorsLike = function(color) {
+		for (var i=0; i<grid.length; i++) {
+			if (grid[i].col && grid[i].col.valueOf()==color.valueOf()) return true;
+		}
+		return false;
+	}
+	
 	// начальные манипуляции с канвасом
 	this.resetCanvas = function() {
 		canvas.style.width = h_size * cell_width + "px";
