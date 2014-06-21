@@ -62,6 +62,11 @@ GameMaster.prototype.setup = function(generators, players) {
 		//TODO: мб http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
 		return new p[0](gm, p[1]); //function, color
 	});
+	this.allPlayers = this.players.slice();
+	
+	this.colorFor = function(id) {
+		return this.allPlayers[id].color;
+	}
 	
 	core.on("map-animation-end", function() {
 		var player = gm.currentPlayer();
@@ -201,7 +206,7 @@ MapConfigProvider.procedural = {
 	_getMapGenerators: function() {
 		return [
 			[MapGenerator.sizeFixed, pupsConf.w, pupsConf.h],
-			MapGenerator.cellRandom,
+			[MapGenerator.cellRandom, Color.GRAY],
 			MapGenerator.dirMiddleSnake,
 			MapGenerator.wallBorder,
 			[MapGenerator.hole, true, 0.75, 0.25, 0.15],
@@ -226,13 +231,19 @@ MapConfigProvider.URL = {
 		[LocalPlayer, Color.GREEN],
 		[TestAi, Color.RED]
 	],
+	_getColors: function() {
+		return {
+			players: this._players.map(function(p){ return p[1] }),
+			neutral: Color.GRAY
+		};
+	},
 	getConfig: function(onErr, onOk) {
 		var m = location.hash.match(/lvl:(.+)/);
 		if (m == null) {
 			onErr(new Error("No valid lvl data in URL"));
 		} else {
 			onOk({
-				generators: [[MapGenerator.openLevel, decodeURI(m[1])]],
+				generators: [[MapGenerator.openLevel, decodeURI(m[1]), _getColors()]],
 				players: this._players,
 				onGameOver: function(winner){ location.reload() }
 			});
@@ -245,11 +256,18 @@ MapConfigProvider.story = {
 		[LocalPlayer, Color.GREEN],
 		[TestAi, Color.RED]
 	],
+	_getColors: function() {
+		return {
+			players: this._players.map(function(p){ return p[1] }),
+			neutral: Color.GRAY
+		};
+	},
 	_onGameOver: function(winner) {
 		if (winner instanceof LocalPlayer) location.hash = "n:"+(level_id+1);
 		location.reload();
 	},
 	getConfig: function(onErr, onOk) {
+		var provider = this;
 		var level_id = 0;
 		var m = location.hash.match(/n:(\d+)/);
 		if (m != null) level_id = +m[1];
@@ -261,9 +279,9 @@ MapConfigProvider.story = {
 				onErr(new Error("Level loading failed, <"+code+">: "+data));
 			} else {
 				onOk({
-					generators: [[MapGenerator.openLevel, data]],
-					players: this._players,
-					onGameOver: this._onGameOver
+					generators: [[MapGenerator.openLevel, data, provider._getColors()]],
+					players: provider._players,
+					onGameOver: provider._onGameOver
 				});
 			}
 		});

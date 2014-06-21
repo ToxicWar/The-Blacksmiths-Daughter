@@ -11,9 +11,9 @@ var clearCellTypes = [
 	},
 	{
 		regEx: /(\d)(>|v|<|\^)/,
-		func: function(map, player_id, arrow) {
-			var col = player_id==0 ? map.neutralColor : map.colorFor(player_id-1);
-			if (!col) throw new Error("Map doesn't have color for player №"+player_id);
+		func: function(colors, player_id, arrow) {
+			var col = player_id==0 ? colors.neutral : colors.players[player_id-1];
+			if (!col) throw new Error("No color for player №"+player_id);
 			return new Cell(clearCellDirMap[arrow], col);
 		},
 	}
@@ -30,15 +30,15 @@ var easyCellTypes = [
 	},
 	{
 		regEx: /(\d)(\d)/,
-		func: function(map, player_id, dir) {
-			var col = player_id==0 ? map.neutralColor : map.colorFor(player_id-1);
-			if (!col) throw new Error("Map doesn't have color for player №"+player_id);
+		func: function(colors, player_id, dir) {
+			var col = player_id==0 ? colors.neutral : colors.players[player_id-1];
+			if (!col) throw new Error("No color for player №"+player_id);
 			return new Cell(+dir, col);
 		},
 	}
 ];
 
-function parseLine(map, line, j, cellTypes) {
+function parseLine(map, colors, line, j, cellTypes) {
 	var elems = line.split(/\s+/);
 	
 	if (map.h_size > 0) {
@@ -54,7 +54,7 @@ function parseLine(map, line, j, cellTypes) {
 		for (var k=0; k<cellTypes.length; k++) {
 			var m = elems[i].match(cellTypes[k].regEx);
 			if (m == null) continue;
-			m[0] = map;
+			m[0] = colors;
 			map.grid[i + j*map.h_size] = cellTypes[k].func.apply(null, m);
 			found = true;
 		}
@@ -62,7 +62,7 @@ function parseLine(map, line, j, cellTypes) {
 	}
 }
 
-MapGenerator.openLevel = function(map, data) {
+MapGenerator.openLevel = function(map, data, colors) {
 	data = data.trim();
 	
 	// эксклюзивнй (с) интеллектуальный (R) литерационно-позиционно-оценочный^TM отпределятор формата.
@@ -71,6 +71,6 @@ MapGenerator.openLevel = function(map, data) {
 	var lines = data.split(/\s*\n\s*/);
 	map.v_size = lines.length;
 	for (var j=0; j<lines.length; j++) {
-		parseLine(map, lines[j], j, cellTypes);
+		parseLine(map, colors, lines[j], j, cellTypes);
 	}
 }

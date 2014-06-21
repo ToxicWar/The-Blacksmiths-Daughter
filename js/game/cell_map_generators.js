@@ -8,9 +8,9 @@ MapGenerator.sizeFixed = function(map, h_size, v_size) {
 }
 
 
-MapGenerator.cellRandom = function(map) {
+MapGenerator.cellRandom = function(map, color) {
 	for (var i=0; i<map.grid.length; i++)
-		map.grid[i] = new Cell(Math.random()*4|0, Color.GRAY);
+		map.grid[i] = new Cell(Math.random()*4|0, color);
 }
 
 

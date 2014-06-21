@@ -64,7 +64,6 @@ function Map(conf) {
 		}
 	}
 	
-	//conf.playersPositionsGenerator(grid, h_size, v_size, conf.playersColors);
 	
 	this.x2i = function(x) { return x/cell_width|0 }
 	this.y2j = function(y) { return y/cell_width|0 }

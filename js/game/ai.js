@@ -10,12 +10,16 @@ function FakeMap(map) {
 	this.triggerAt = map.triggerAt;
 	
 	this.addUpdatingSomethingAt = function(i, j, obj) {
-		console.log(i,j,obj.constructor.name)
+		console.log("Adding "+obj.constructor.name+" at ", i, j);
 		this.updatingCells[i+j*this.h_size] = obj;
 		this.updated_count++;
 	};
 	
-	this.stillAnimating = map.stillAnimating;
+	//this.stillAnimating = map.stillAnimating; //TODO
+	this.stillAnimating = function() {
+		for (var i in this.updatingCells) return true;
+		return false;
+	}
 	
 	this.update = function() {// копипаста, нетруъ  // уже лучше, но всё равно TODO
 		var keys = Object.keys(this.updatingCells);
@@ -51,6 +55,7 @@ function TestAi(gm, color) {
 	var triggerablePositions = [];
 	
 	this.gotTurn = function() {
+		console.log(" --- AI begin ---");
 		var best_pos = findBestActionForNow();
 		
 		if (triggerablePositions.length == 0) {
@@ -72,6 +77,7 @@ function TestAi(gm, color) {
 		var j = best_pos/fakeMap.h_size|0;
 		var done = gm.doTurn(i, j, this);
 		if (!done) throw new Error("Failed to do desired turn at "+i+", "+j+" with "+color.toString()); //DEBUG
+		console.log(" --- AI end ---");
 	}
 	
 	function findBestActionForNow() {
@@ -82,6 +88,7 @@ function TestAi(gm, color) {
 			map.copyGridTo(fakeMap.grid);
 			var count = go(i%fakeMap.h_size, i/fakeMap.h_size|0, 1);
 			if (count == -1) continue;
+			console.log("Count for now: "+count);
 			triggerablePositions.push(i);
 			if (count > max_count) {max_count = count; best_pos = i;}
 		}
@@ -95,7 +102,7 @@ function TestAi(gm, color) {
 			var pos = triggerablePositions[i];
 			map.copyGridTo(fakeMap.grid);
 			var count = go(pos%fakeMap.h_size, pos/fakeMap.h_size|0, 2);
-			console.log("count", count)
+			console.log("Count for next: "+count);
 			if (count == -1) continue;
 			if (count > max_count) {max_count = count; best_pos = pos;}
 		}
@@ -118,12 +125,13 @@ function TestAi(gm, color) {
 		cell.dir = (cell.dir + 3)%4;
 		
 		if (!fakeMap.cellAt(i+delta.i, j+delta.j).connectable) return 1;
-		console.log(cell.dir)
+		console.log("GO: cell at ("+i+","+j+"), dir: "+cell.dir);
 		
 		cell.rotate(fakeMap, i, j, (cell.dir+1)%4);
 		
 		while (fakeMap.stillAnimating()) fakeMap.update();
 		
+		console.log("GO: count after: "+fakeMap.updated_count);
 		return fakeMap.updated_count;
 	}
 	

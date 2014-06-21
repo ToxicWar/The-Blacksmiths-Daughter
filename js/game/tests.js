@@ -1,5 +1,7 @@
 // пока здесь, TODO
 (function() {
+	console.log(" === TESTS BEGIN === ");
+	
 	console.assertEq = function(a, b, msg) {
 		if (a === b) return;
 		this.error(msg, a, b);
@@ -8,13 +10,16 @@
 	var u = undefined;
 	var r = Color.RED, g = Color.GREEN, n = Color.GRAY;
 	
+	var colors = {
+		players: [Color.GREEN, Color.RED],
+		neutral: Color.GRAY
+	};
+	
 	function makeFakeMap() {
 		return {
 			grid: [],
 			h_size: 0,
-			v_size: 0,
-			colorFor: function(id) {return [Color.GREEN, Color.RED][id]},
-			neutralColor: Color.GRAY
+			v_size: 0
 		};
 	}
 	
@@ -54,7 +59,7 @@
 	
 	[lvl1_clear, lvl1_easy].forEach(function(lvl1) {
 		var fakeMap = makeFakeMap();
-		MapGenerator.openLevel(fakeMap, lvl1);
+		MapGenerator.openLevel(fakeMap, lvl1, colors);
 		
 		console.assertEq(fakeMap.h_size, 5, "map should have correct width");
 		console.assertEq(fakeMap.v_size, 4, "map should have correct height");
@@ -76,9 +81,50 @@
 	
 	
 	try {
-		MapGenerator.openLevel(makeFakeMap(), "W0 W0\n");
-		MapGenerator.openLevel(makeFakeMap(), "-- --\n");
+		MapGenerator.openLevel(makeFakeMap(), "W0 W0\n", colors);
+		MapGenerator.openLevel(makeFakeMap(), "-- --\n", colors);
 	} catch(e) {
 		console.error("trailing newline should not cause exceptions:\n", e);
 	}
+	
+	
+	
+	var ai_lvl =
+	"-- -- -- -- --\n\
+	 |  0< 0< 2v  |\n\
+	 |  0> 0> 2v  |\n\
+	 -- -- -- -- --";
+	
+	var fakeMap = {
+		grid: [],
+		h_size: 0,
+		v_size: 0,
+		copyGridTo: function(array) {
+			array.length = this.grid.length;
+			for (var i=0; i<array.length; i++) {
+				array[i] = new this.grid[i].constructor(this.grid[i].dir, this.grid[i].col);
+			}
+		},
+		triggerAt: function() {}
+	};
+	
+	var fakeGM = {
+		was_used: false,
+		map: fakeMap,
+		doTurn: function(i, j, player) {
+			was_used = true;
+			console.assertEq([i, j]+"", [3, 1]+"", "should do turn at best position");
+			return true;
+		}
+	};
+	
+	MapGenerator.openLevel(fakeGM.map, ai_lvl, colors);
+	
+	var ai = new TestAi(fakeGM, Color.RED);
+	
+	ai.gotTurn();
+	console.assert(fakeGM.was_used, "turn should be done");
+	
+	console.log(" === TESTS END === ");
+	console.log("");
 })();
