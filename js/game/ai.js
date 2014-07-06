@@ -15,11 +15,7 @@ function FakeMap(map) {
 		this.updated_count++;
 	};
 	
-	//this.stillAnimating = map.stillAnimating; //TODO
-	this.stillAnimating = function() {
-		for (var i in this.updatingCells) return true;
-		return false;
-	};
+	this.stillAnimating = map.stillAnimating; //TODO
 	
 	this.update = function() {// копипаста, нетруъ  // уже лучше, но всё равно TODO
 		var keys = Object.keys(this.updatingCells);
@@ -78,6 +74,10 @@ function TestAi(gm, color) {
 		var done = gm.doTurn(i, j, this);
 		if (!done) throw new Error("Failed to do desired turn at "+i+", "+j+" with "+color.toString()); //DEBUG
 		console.log(" --- AI end ---");
+	}
+	
+	this.loss = function() {
+		
 	}
 	
 	function findBestActionForNow() {

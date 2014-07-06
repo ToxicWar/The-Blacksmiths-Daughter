@@ -74,8 +74,8 @@ GameMaster.prototype.setup = function(generators, players, onGameOver) {
 		
 		if (gm.map.hasColorsLike(player.color)) {
 			player.gotTurn();
-			//TODO: mb player.loss();
 		} else {
+			player.loss();
 			gm.players.splice(gm.cur_player_id, 1);
 			if (gm.cur_player_id == gm.players.length) gm.cur_player_id = 0;
 			if (gm.players.length == 1) onGameOver(gm.players[0]);
@@ -203,9 +203,9 @@ core.on("window-onload", function() {
 function LocalPlayer(gm, color) {
 	this.color = color;
 	
-	this.gotTurn = function() {
-		
-	}
+	this.gotTurn = function(){};
+	
+	this.loss = function(){};
 }
 
 

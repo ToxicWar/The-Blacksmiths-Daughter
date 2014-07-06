@@ -1,4 +1,6 @@
-//TODO: description here!
+// Абилки
+// hover - абилка проносится над ячейкой, должно возвращать true, если применябельно
+// act - запустить абилку в ячейке
 
 var Ability = (function() {
 	function Bomb(w, h) {

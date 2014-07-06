@@ -88,7 +88,7 @@ function lastOnRay(grid, h_size, v_size, angle, Obj) {
 	return [last_i, last_j, pointDistance(last_i, last_j, x_origin, y_origin)];
 }
 
-MapGenerator.playersPositions = function(map, colors, callback) {
+MapGenerator.playersPositions = function(map, colors) {
 	var grid = map.grid;
 	var h_size = map.h_size;
 	var v_size = map.v_size;
@@ -105,14 +105,6 @@ MapGenerator.playersPositions = function(map, colors, callback) {
 			if (pos[2] > max_dis) {max_dis = pos[2]; max_pos=pos;}
 		}
 		
-		if (callback) { //TODO: а зачем я этот вставил?
-			positions.push({
-				i: max_pos[0],
-				j: max_pos[1],
-				col: colors[col_i]
-			});
-		}
 		grid[max_pos[0] + max_pos[1]*h_size].col = colors[col_i];
 	}
-	if (callback) callback(positions);
 }

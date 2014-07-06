@@ -105,9 +105,8 @@
 				array[i] = new this.grid[i].constructor(this.grid[i].dir, this.grid[i].col);
 			}
 		},
-		triggerAt: function(i, j, color, do_not_chain) { //TODO: тащить потом из Map.prototype
-			return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
-		}
+		triggerAt: Map.prototype.triggerAt,
+		stillAnimating: Map.prototype.stillAnimating
 	};
 	
 	var fakeGM = {
