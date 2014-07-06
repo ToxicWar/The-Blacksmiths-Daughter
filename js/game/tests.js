@@ -105,14 +105,16 @@
 				array[i] = new this.grid[i].constructor(this.grid[i].dir, this.grid[i].col);
 			}
 		},
-		triggerAt: function() {}
+		triggerAt: function(i, j, color, do_not_chain) { //TODO: тащить потом из Map.prototype
+			return this.cellAt(i,j).trigger(this, i, j, color, do_not_chain);
+		}
 	};
 	
 	var fakeGM = {
 		was_used: false,
 		map: fakeMap,
 		doTurn: function(i, j, player) {
-			was_used = true;
+			this.was_used = true;
 			console.assertEq([i, j]+"", [3, 1]+"", "should do turn at best position");
 			return true;
 		}

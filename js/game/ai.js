@@ -19,7 +19,7 @@ function FakeMap(map) {
 	this.stillAnimating = function() {
 		for (var i in this.updatingCells) return true;
 		return false;
-	}
+	};
 	
 	this.update = function() {// копипаста, нетруъ  // уже лучше, но всё равно TODO
 		var keys = Object.keys(this.updatingCells);
@@ -35,15 +35,15 @@ function FakeMap(map) {
 			if (updated) continue;
 			delete this.updatingCells[keys[i]];
 		}
-	}
+	};
 	
 	this.cellAtPos = function(pos) {
 		return this.grid[pos.i + pos.j*this.h_size];
-	}
+	};
 	
 	this.cellAt = function(i, j) {
 		return this.grid[i + j*this.h_size];
-	}
+	};
 }
 
 

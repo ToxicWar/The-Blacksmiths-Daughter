@@ -24,7 +24,8 @@ function GameMaster(configProvider) {
 	configProvider.getConfig(function(err) {
 		throw err;
 	}, function(conf) {
-		gm.setup(conf.generators, conf.players);
+		gm.setup(conf.generators, conf.players, conf.onGameOver);
+		gm.start();
 	});
 }
 
@@ -48,7 +49,7 @@ GameMaster.prototype.previousPlayer = function() {
 //-------------------
 // Инициализация
 //-------------------
-GameMaster.prototype.setup = function(generators, players) {
+GameMaster.prototype.setup = function(generators, players, onGameOver) {
 	if (this.isReady()) throw new Error("Already initialized");
 	var gm = this;
 	
@@ -73,9 +74,11 @@ GameMaster.prototype.setup = function(generators, players) {
 		
 		if (gm.map.hasColorsLike(player.color)) {
 			player.gotTurn();
+			//TODO: mb player.loss();
 		} else {
 			gm.players.splice(gm.cur_player_id, 1);
 			if (gm.cur_player_id == gm.players.length) gm.cur_player_id = 0;
+			if (gm.players.length == 1) onGameOver(gm.players[0]);
 			core.emit("game-player-loss", [player]);
 		}
 		
@@ -184,8 +187,14 @@ GameMaster.prototype.doTurnReal = function(x, y, player) {
 var gameMaster = null;
 core.on("window-onload", function() {
 	
-	gameMaster = new GameMaster(MapConfigProvider.procedural);
-	gameMaster.start();
+	//gameMaster = new GameMaster(MapConfigProvider.procedural);
+	//gameMaster = new GameMaster(MapConfigProvider.URL);
+	//gameMaster = new GameMaster(MapConfigProvider.story);
+	gameMaster = new GameMaster(
+		MapConfigProvider.makeSequential(
+			[MapConfigProvider.URL, MapConfigProvider.story]
+		)
+	);
 	
 	// сокеты? а чего, оно всё равно не работает
 });
@@ -221,7 +230,7 @@ MapConfigProvider.procedural = {
 		onOk({
 			generators: this._getMapGenerators(),
 			players: this._players,
-			onGameOver: function(winner){ location.reload() }
+			onGameOver: function(winner){ alert("Win! reload..."); location.reload() }
 		});
 	}
 };
@@ -238,20 +247,22 @@ MapConfigProvider.URL = {
 		};
 	},
 	getConfig: function(onErr, onOk) {
+		var provider = this;
 		var m = location.hash.match(/lvl:(.+)/);
 		if (m == null) {
 			onErr(new Error("No valid lvl data in URL"));
 		} else {
 			onOk({
-				generators: [[MapGenerator.openLevel, decodeURI(m[1]), _getColors()]],
-				players: this._players,
-				onGameOver: function(winner){ location.reload() }
+				generators: [[MapGenerator.openLevel, decodeURI(m[1]), provider._getColors()]],
+				players: provider._players,
+				onGameOver: function(winner){ alert("Win! reload..."); location.reload() }
 			});
 		}
 	}
 };
 
 MapConfigProvider.story = {
+	_level_id: 0,
 	_players: [
 		[LocalPlayer, Color.GREEN],
 		[TestAi, Color.RED]
@@ -263,16 +274,16 @@ MapConfigProvider.story = {
 		};
 	},
 	_onGameOver: function(winner) {
-		if (winner instanceof LocalPlayer) location.hash = "n:"+(level_id+1);
+		if (winner instanceof LocalPlayer) location.hash = "n:"+(this._level_id+1);
+		alert("Win! next...");
 		location.reload();
 	},
 	getConfig: function(onErr, onOk) {
 		var provider = this;
-		var level_id = 0;
 		var m = location.hash.match(/n:(\d+)/);
-		if (m != null) level_id = +m[1];
+		if (m != null) this._level_id = +m[1];
 		
-		XHR('GET', "./res/lvl"+level_id+".txt", null, function(code, data) {
+		XHR('GET', "./res/lvl"+this._level_id+".txt", null, function(code, data) {
 			// ноль? да, ноль. оно при загрузке с file:/// возвращает туда ноль
 			// TODO: убрать проверку на ноль потом отсюда нафиг
 			if (code != 200 && code != 0) {
@@ -281,9 +292,24 @@ MapConfigProvider.story = {
 				onOk({
 					generators: [[MapGenerator.openLevel, data, provider._getColors()]],
 					players: provider._players,
-					onGameOver: provider._onGameOver
+					onGameOver: provider._onGameOver.bind(provider)
 				});
 			}
-		});
+		});//TODO: on XHR error
+	}
+};
+
+MapConfigProvider.makeSequential = function(providers) {
+	return {
+		getConfig: function(onErr, onOk) {
+			var i = 0;
+			function iter(err) {
+				if (i == providers.length) onErr(err);
+				providers[i++].getConfig(iter, onOk);
+			}
+			iter(null);
+		}
 	}
 }
+
+
