@@ -5,46 +5,46 @@
 
 function Map(conf) {
 	var map = this;
-	var canvas = conf.canvas;
-	var rc;
-	var cell_width = conf.cell_width;
-	var scale = devicePixelRatio;
+	this.canvas = conf.canvas;
+	this.rc;
+	this.cell_width = conf.cell_width;
+	this.scale = devicePixelRatio;
 	//var playersColors = conf.playersColors;
 	//var neutralColor = conf.neutralColor;
-	var h_size = 0;//conf.h_size || 0;
-	var v_size = 0;//conf.v_size || 0;
+	this.h_size = 0;//conf.h_size || 0;
+	this.v_size = 0;//conf.v_size || 0;
 	
 	// сетка. вообще, надо было её двумерным массиво делать, но уж так пошло...
-	var grid = [];//new Array(h_size * v_size);
+	this.grid = [];//new Array(h_size * v_size);
 	
-	Object.defineProperties(this, {
+	/*Object.defineProperties(this, {
 		"grid": {get: function(){ return grid }},
 		"h_size": {get: function(){ return h_size }, set: function(h){ h_size=h }},
 		"v_size": {get: function(){ return v_size }, set: function(v){ v_size=v }},
 		//"playersColors": {get: function(){ return playersColors }},
 		//"neutralColor": {get: function(){ return neutralColor }},
-	});
+	});*/
 	
 	//this.colorFor = function(player_id) {
 	//	return playersColors[player_id];
 	//}
 	
-	this.hasColorsLike = function(color) {
+	this.hasColorsLike = function(color) {with(this) {
 		for (var i=0; i<grid.length; i++) {
 			if (grid[i].col && grid[i].col.valueOf()==color.valueOf()) return true;
 		}
 		return false;
-	}
+	}}
 	
 	// начальные манипуляции с канвасом
-	this.resetCanvas = function() {
+	this.resetCanvas = function() {with(this) {
 		canvas.style.width = h_size * cell_width + "px";
 		canvas.style.height = v_size * cell_width + "px";
 		canvas.width  = h_size * cell_width * scale;
 		canvas.height = v_size * cell_width * scale;
 		rc = canvas.getContext("2d");
 		rc.scale(scale, scale);
-	}
+	}}
 	
 	
 	this.applyGenerator = function(gen) {
@@ -65,20 +65,20 @@ function Map(conf) {
 	}
 	
 	
-	this.x2i = function(x) { return x/cell_width|0 }
-	this.y2j = function(y) { return y/cell_width|0 }
+	this.x2i = function(x) { return x / this.cell_width |0 }
+	this.y2j = function(y) { return y / this.cell_width |0 }
 	
 	// возврщает ячейку в позиции i, j
 	this.cellAt = function(i, j) {
-		return grid[i + j*h_size];
+		return this.grid[i + j*this.h_size];
 	}
 	this.safeCellAt = function(i, j) {
-		if (i < 0 || i >= h_size) return null;
-		if (j < 0 || j >= v_size) return null;
-		return grid[i + j*h_size];
+		if (i < 0 || i >= this.h_size) return null;
+		if (j < 0 || j >= this.v_size) return null;
+		return this.grid[i + j*this.h_size];
 	}
 	
-	this.copyGridTo = function(array) {
+	this.copyGridTo = function(array) {with(this) {
 		for (var i=0; i<grid.length; i++) {
 			if (array[i] && grid[i] instanceof array[i].constructor) {
 				if ('col' in grid[i]) array[i].col = grid[i].col;
@@ -87,17 +87,17 @@ function Map(conf) {
 				array[i] = new grid[i].constructor(grid[i].dir, grid[i].col);
 			}
 		}
-	}
+	}}
 	
-	this.packGrig = function() {
+	/*this.packGrig = function() {
 		var str = "";
 		for (var i=0; i<grid.length; i++) str += grid[i].toString();
 		return str;
-	}
+	}*/
 	
 	
 	// рисует ячейку в позиции i, j; если надо, пытается ей переопределить направление и цвет
-	this.drawCell = function(cell, i, j, dir, col) {
+	this.drawCell = function(cell, i, j, dir, col) {with(this) {
 		if (!cell.draw) return;
 		var dx = (i+0.5) * cell_width;
 		var dy = (j+0.5) * cell_width;
@@ -114,13 +114,12 @@ function Map(conf) {
 		}
 		cell.draw(rc, cell_width, dir, col);
 		rc.restore();
-	}
+	}}
 	
 	// перерисовка ВСЕГО. часто не вызывать
 	this.drawAll = function() {
-		//rc.clearRect(0, 0, canvas.width, canvas.height);
-		for (var i=0; i<h_size; i++) {
-			for (var j=0; j<v_size; j++) {
+		for (var i=0; i<this.h_size; i++) {
+			for (var j=0; j<this.v_size; j++) {
 				this.drawCell(this.cellAt(i, j), i, j);
 			}
 		}
@@ -148,12 +147,12 @@ function Map(conf) {
 	// добавление в очередь на перерисовку; для и иже с ними //кого?
 	this.addUpdatingSomethingAt = function(i, j, obj) {
 		if (this.somethingUpdatesAt(i, j)) throw new Error("Already animating at ("+i+","+j+")"); //DEBUG
-		updatingCells[i + j*h_size] = obj;
+		updatingCells[i + j*this.h_size] = obj;
 		firedAnimationEnd = false;
 	}
 	// что-то тут обновляется?
 	this.somethingUpdatesAt = function(i, j) {
-		return (i + j*h_size) in updatingCells;
+		return (i + j*this.h_size) in updatingCells;
 	}
 	// анимация ещё продолжается?
 	this.stillAnimating = function() {
@@ -167,8 +166,8 @@ function Map(conf) {
 		for (var i=0; i<keys.length; i++) {
 			var ucell = updatingCells[keys[i]];
 			var pos = parseInt(keys[i]); // вынимаем координаты из ключа хешмапа
-			var ucell_i = pos%h_size;
-			var ucell_j = pos/h_size|0;
+			var ucell_i = pos % this.h_size;
+			var ucell_j = pos / this.h_size|0;
 			
 			var updated = ucell.update(this);
 			ucell.draw(this); // кадр анимации
@@ -218,8 +217,7 @@ function Map(conf) {
 		this.drawCell(cell, i, j);
 	}
 	this.hackColorReal = function(x, y, col) {
-		var i=x/cell_width|0, j=y/cell_width|0;
-		this.hackColor(i, j, col);
+		this.hackColor(this.x2i(x), this.y2j(y), col);
 	}
 	
 	
