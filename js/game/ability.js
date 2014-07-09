@@ -12,18 +12,16 @@ var Ability = (function() {
 	}
 	
 	Bomb.prototype._markAll = function(gm, ci, cj) {
-		var map = gm.map;
-		for (var i=0; i<map.h_size; i++)
-			for (var j=0; j<map.v_size; j++) {
-				var cell = map.cellAt(i, j);
-				var usable = !!cell.col;
-				if (!usable) continue;
-				
-				var affected = usable &&
-					ci-this.w<=i && i<=ci+this.w &&
-					cj-this.h<=j && j<=cj+this.h;
-				gm.highlighter.mark(i, j, affected ? "green" : "gray");
-			}
+		var w=this.w, h=this.h;
+		gm.map.forEachInGrid(function(i, j, cell) {
+			var usable = !!cell.col;
+			if (!usable) return;
+			
+			var affected = usable &&
+				ci-w<=i && i<=ci+w &&
+				cj-h<=j && j<=cj+h;
+			gm.highlighter.mark(i, j, affected ? "green" : "gray");
+		});
 	}
 	
 	Bomb.prototype.hover = function(gm, ci, cj, playerColor) {
@@ -42,7 +40,6 @@ var Ability = (function() {
 				gm.map.triggerAt(i, j, playerColor, true);
 			}
 		}
-		gm.highlighter.clear();
 		return true;
 	}
 	
@@ -53,21 +50,18 @@ var Ability = (function() {
 	}
 	
 	Overcharge.prototype._markAll = function(gm, ci, cj, playerColor) {
-		var map = gm.map;
-		for (var i=0; i<map.h_size; i++)
-			for (var j=0; j<map.v_size; j++) {
-				var cell = map.cellAt(i, j);
-				var usable = !!(cell.col && cell.col.is(playerColor));
-				if (!usable) continue;
-				
-				gm.highlighter.mark(i, j, usable ? "green" : "gray");
-			}
+		gm.map.forEachInGrid(function(i, j, cell) {
+			var usable = !!(cell.col && cell.col.is(playerColor));
+			if (!usable) return;
+			
+			gm.highlighter.mark(i, j, "green");
+		});
 	}
 	
 	Overcharge.prototype._getCellIfAppropriate = function(map, ci, cj, playerColor) {
 		var cell = map.safeCellAt(ci, cj);
 		// && cell.looksAt
-		if (!cell || !cell.col || cell.col.valueOf()!=playerColor.valueOf()) return null;
+		if (!cell || !cell.col || !cell.col.is(playerColor)) return null;
 		return cell;
 	}
 	
@@ -88,10 +82,10 @@ var Ability = (function() {
 		for (var i=1; i<this.n; i++) {
 			ci += delta.i;
 			cj += delta.j;
+			if (!gm.map.cellAt(ci, cj).col) break;
 			gm.map.triggerAt(ci, cj, playerColor);
 		}
 		
-		gm.highlighter.clear();
 		return true;
 	}
 	

@@ -111,7 +111,7 @@ function TestAi(gm, color) {
 	
 	function triggerable(cell) {
 		if (!(cell instanceof Cell)) return false;
-		if (cell.col.valueOf() != color.valueOf()) return false;
+		if (!cell.col.is(color)) return false;
 		return true;
 	}
 	

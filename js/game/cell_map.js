@@ -72,7 +72,7 @@ Map.prototype._applyGenerators = function(generators) {
 // есть ли на карте такой цвет
 Map.prototype.hasColorsLike = function(color) {with(this) {
 	for (var i=0; i<grid.length; i++) {
-		if (grid[i].col && grid[i].col.valueOf()==color.valueOf()) return true;
+		if (grid[i].col && grid[i].col.is(color)) return true;
 	}
 	return false;
 }};
@@ -102,6 +102,14 @@ Map.prototype.copyGridTo = function(array) {with(this) {
 		}
 	}
 }}
+
+Map.prototype.forEachInGrid = function(fn) {
+	for (var i=0; i<this.h_size; i++) {
+		for (var j=0; j<this.v_size; j++) {
+			fn(i, j, this.cellAt(i, j));
+		}
+	}
+}
 
 
 //---------------
@@ -160,9 +168,19 @@ Map.prototype.triggerAt = function(i, j, color, do_not_chain) {
 
 // добавление в очередь на перерисовку; для и иже с ними //кого?
 Map.prototype.addUpdatingSomethingAt = function(i, j, obj) {
-	if (this.somethingUpdatesAt(i, j)) throw new Error("Already animating at ("+i+","+j+")"); //DEBUG
-	this.updatingCells[i + j*this.h_size] = obj;
-	this.firedAnimationEnd = false;
+	if (this.somethingUpdatesAt(i, j)) {
+		var cur = this.updatingCells[i + j*this.h_size];
+		if (cur.constructor === RotatingCell && cur.dir_to === obj.dir_to) {
+			// OK
+		} else if (cur.constructor === FadingCell && cur.col_to === obj.col_to) {
+			// OK
+		} else {
+			throw new Error("Already animating at ("+i+","+j+")"); //DEBUG
+		}
+	} else {
+		this.updatingCells[i + j*this.h_size] = obj;
+		this.firedAnimationEnd = false;
+	}
 };
 
 // что-то тут обновляется?
@@ -209,8 +227,8 @@ Map.prototype.doTurn = function(i, j, delta, color) {
 	
 	var cell = this.cellAt(i, j);
 	
-	if (!cell.col || cell.col.valueOf() != color.valueOf()) return false;
-	//if (playersColors[0].valueOf() != color.valueOf()) return false;
+	if (!cell.col || !cell.col.is(color)) return false;
+	//if (!playersColors[0].is(color)) return false;
 	
 	cell.rotate(this, i, j, (cell.dir+4+delta)%4);
 	//playersColors.push(playersColors.shift());

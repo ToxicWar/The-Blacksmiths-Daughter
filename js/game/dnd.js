@@ -34,6 +34,8 @@ function DragObject(element, skill) {
         s.top = rememberPosition.top;
         s.left = rememberPosition.left;
         s.position = rememberPosition.position;
+
+        gameMaster.highlighter.clear();
     };
 
     this.toString = function() {
@@ -47,9 +49,14 @@ function DragObject(element, skill) {
 
 function DropTarget(element) {
 
+    this.element = element;
     element.dropTarget = this;
 
-    this.canAccept = function(relX, relY, dragObject) {
+    this.canAcceptInTheory = function(dragObject) {
+        return true;
+    }
+
+    this.canAcceptNow = function(relX, relY, dragObject) {
         return gameMaster.hoverAbilityReal(dragObject.skill(), relX, relY);
     };
 
@@ -83,6 +90,7 @@ var dragMaster = (function() {
     var mouseDownAt;
 
     var currentDropTarget;
+    var currntlyAcceptable;
 
     function mouseDown(e) {
         e = fixEvent(e);
@@ -121,6 +129,10 @@ var dragMaster = (function() {
 
         // (3)
         var newTarget = getCurrentTarget(e);
+        if (newTarget) {
+            var mouseOffset = getMouseOffset(newTarget.element, e.pageX, e.pageY);
+            currntlyAcceptable = newTarget.canAcceptNow(mouseOffset.x, mouseOffset.y, dragObject);
+        }
 
         // (4)
         if (currentDropTarget != newTarget) {
@@ -142,8 +154,9 @@ var dragMaster = (function() {
             mouseDownAt = null
         } else {
             // (2)
-            if (currentDropTarget) {
-                currentDropTarget.accept(e.pageX, e.pageY, dragObject);
+            if (currentDropTarget && currntlyAcceptable) {
+                var mouseOffset = getMouseOffset(currentDropTarget.element, e.pageX, e.pageY);
+                currentDropTarget.accept(mouseOffset.x, mouseOffset.y, dragObject);
                 dragObject.onDragSuccess(e.pageX, e.pageY, currentDropTarget);
             } else {
                 dragObject.onDragFail();
@@ -157,7 +170,7 @@ var dragMaster = (function() {
     }
 
     function getMouseOffset(target, x, y) {
-        var docPos= getOffset(target);
+        var docPos = getOffset(target);
         return {x:x - docPos.left, y:y - docPos.top};
     }
 
@@ -174,7 +187,7 @@ var dragMaster = (function() {
         // найти самую вложенную dropTarget
         while (elem) {
             // которая может принять dragObject
-            if (elem.dropTarget && elem.dropTarget.canAccept(x, y, dragObject)) {
+            if (elem.dropTarget && elem.dropTarget.canAcceptInTheory(dragObject)) {
                 return elem.dropTarget
             }
             elem = elem.parentNode;
