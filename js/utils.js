@@ -42,3 +42,21 @@ window.onerror = function(errorMsg, url, lineNumber) {
 		errorMsg;
 	alert(msg);
 }
+
+function Point(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+Point.prototype.isAt = function(x, y) {
+	return x===this.x && y===this.y;
+}
+
+Point.prototype.is = function(point) {
+	return point.x===this.x && point.y===this.y;
+}
+
+Point.prototype.set = function(x, y) {
+	this.x = x;
+	this.y = y;
+}

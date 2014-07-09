@@ -19,6 +19,10 @@ Color.prototype.copy = function() {
 	return new Color(this.r, this.b, this.b);
 }
 
+Color.prototype.is = function(other) {
+	return this.valueOf() === other.valueOf();
+}
+
 Color.fade = function(out, col0, col1, a) {
 	var ia = 1-a;
 	out.r = (col0.r*ia + col1.r*a)|0;

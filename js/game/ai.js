@@ -142,4 +142,8 @@ function TestAi(gm, color) {
 			if ('dir' in cell) cell.dir = (cell.dir+4+delta)%4;
 		}
 	}*/
+	
+	this.toString = function() {
+		return this.constructor.name+"("+this.color+")";
+	}
 }

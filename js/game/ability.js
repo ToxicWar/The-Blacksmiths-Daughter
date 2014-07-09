@@ -2,30 +2,66 @@
 // hover - абилка проносится над ячейкой, должно возвращать true, если применябельно
 // act - запустить абилку в ячейке
 
+//TODO: ability{up, move, act}
+
 var Ability = (function() {
 	function Bomb(w, h) {
 		this.w = w;
 		this.h = h;
+		this.prevPos = new Point(-1, -1);
 	}
 	
-	Bomb.prototype.hover = function(map, ci, cj, playerColor) {
+	Bomb.prototype._markAll = function(gm, ci, cj) {
+		var map = gm.map;
+		for (var i=0; i<map.h_size; i++)
+			for (var j=0; j<map.v_size; j++) {
+				var cell = map.cellAt(i, j);
+				var usable = !!cell.col;
+				if (!usable) continue;
+				
+				var affected = usable &&
+					ci-this.w<=i && i<=ci+this.w &&
+					cj-this.h<=j && j<=cj+this.h;
+				gm.highlighter.mark(i, j, affected ? "green" : "gray");
+			}
+	}
+	
+	Bomb.prototype.hover = function(gm, ci, cj, playerColor) {
+		if (!this.prevPos.isAt(ci, cj)) {
+			this._markAll(gm, ci, cj);
+			this.prevPos.set(ci, cj);
+		}
 		return true;
 	}
 	
-	Bomb.prototype.act = function(map, ci, cj, playerColor) {
+	Bomb.prototype.act = function(gm, ci, cj, playerColor) {
 		var cell;
 		for (var i=ci-this.w; i<=ci+this.w; i++) {
 			for (var j=cj-this.h; j<=cj+this.h; j++) {
-				if ((cell=map.safeCellAt(i, j)) == null) continue;
-				map.triggerAt(i, j, playerColor, true);
+				if ((cell=gm.map.safeCellAt(i, j)) == null) continue;
+				gm.map.triggerAt(i, j, playerColor, true);
 			}
 		}
+		gm.highlighter.clear();
 		return true;
 	}
 	
 	
 	function Overcharge(n) {
 		this.n = n;
+		this.prevPos = new Point(-1, -1);
+	}
+	
+	Overcharge.prototype._markAll = function(gm, ci, cj, playerColor) {
+		var map = gm.map;
+		for (var i=0; i<map.h_size; i++)
+			for (var j=0; j<map.v_size; j++) {
+				var cell = map.cellAt(i, j);
+				var usable = !!(cell.col && cell.col.is(playerColor));
+				if (!usable) continue;
+				
+				gm.highlighter.mark(i, j, usable ? "green" : "gray");
+			}
 	}
 	
 	Overcharge.prototype._getCellIfAppropriate = function(map, ci, cj, playerColor) {
@@ -35,12 +71,16 @@ var Ability = (function() {
 		return cell;
 	}
 	
-	Overcharge.prototype.hover = function(map, ci, cj, playerColor) {
-		return !!this._getCellIfAppropriate(map, ci, cj, playerColor);
+	Overcharge.prototype.hover = function(gm, ci, cj, playerColor) {
+		if (!this.prevPos.isAt(ci, cj)) {
+			this._markAll(gm, ci, cj, playerColor);
+			this.prevPos.set(ci, cj);
+		}
+		return !!this._getCellIfAppropriate(gm.map, ci, cj, playerColor);
 	}
 	
-	Overcharge.prototype.act = function(map, ci, cj, playerColor) {
-		var cell = this._getCellIfAppropriate(map, ci, cj, playerColor);
+	Overcharge.prototype.act = function(gm, ci, cj, playerColor) {
+		var cell = this._getCellIfAppropriate(gm.map, ci, cj, playerColor);
 		if (!cell) return false;
 		
 		var delta = cell.looksAt;
@@ -48,9 +88,10 @@ var Ability = (function() {
 		for (var i=1; i<this.n; i++) {
 			ci += delta.i;
 			cj += delta.j;
-			map.triggerAt(ci, cj, playerColor);
+			gm.map.triggerAt(ci, cj, playerColor);
 		}
 		
+		gm.highlighter.clear();
 		return true;
 	}
 	

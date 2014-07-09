@@ -50,7 +50,7 @@ function DropTarget(element) {
     element.dropTarget = this;
 
     this.canAccept = function(relX, relY, dragObject) {
-        return true
+        return gameMaster.hoverAbilityReal(dragObject.skill(), relX, relY);
     };
 
     this.accept = function(relX, relY, dragObject) {
@@ -64,6 +64,8 @@ function DropTarget(element) {
 
     this.onLeave = function() {
         element.classList.remove('uponMe');
+        
+        gameMaster.highlighter.clear();
     };
 
     this.onEnter = function() {
@@ -129,7 +131,6 @@ var dragMaster = (function() {
                 newTarget.onEnter()
             }
             currentDropTarget = newTarget
-
         }
 
         // (5)
@@ -268,5 +269,5 @@ core.on('window-onload', function() {
         skills_container.appendChild(dragElem);
     });
 
-    new DropTarget(document.getElementById('theGameCanvas'));
+    new DropTarget(document.querySelector('.battlefield'));
 });

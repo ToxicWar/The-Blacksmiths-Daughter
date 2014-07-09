@@ -126,9 +126,9 @@ RotatingCell.prototype.update = function(map, fast) {
 		}
 		return false;
 	}
-	map.drawAt(this.lookAtFrom.i, this.lookAtFrom.j);
+	//map.drawAt(this.lookAtFrom.i, this.lookAtFrom.j);
 	this.dir += d*0.3;
-	map.drawCell(this.cell, this.i, this.j, this.dir, this.col);
+	//map.drawCell(this.cell, this.i, this.j, this.dir, this.col);
 	return true;
 }
 

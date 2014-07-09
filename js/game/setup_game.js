@@ -14,6 +14,7 @@ core.on("game-player-loss", function(player) {
 //--------------------------------
 function GameMaster(configProvider) {
 	var gm = this;
+	this.battlefield = document.querySelector('.battlefield');
 	this.map = null;
 	this.players = null;
 	this.turn_number = 0;
@@ -45,6 +46,13 @@ GameMaster.prototype.previousPlayer = function() {
 	return this.players[id];
 }
 
+GameMaster.prototype.addCanvas = function() {
+	var canvas = document.createElement('canvas');
+	canvas.className = "layer";
+	this.battlefield.appendChild(canvas);
+	return canvas;
+}
+
 
 //-------------------
 // Инициализация
@@ -54,9 +62,14 @@ GameMaster.prototype.setup = function(generators, players, onGameOver) {
 	var gm = this;
 	
 	this.map = new Map({
-		canvas: theGameCanvas,
+		canvas: this.addCanvas(),
 		cell_width: pupsConf.cw,
 		generators: generators
+	});
+	
+	this.highlighter = new Highlighter({
+		map: this.map,
+		canvas: this.addCanvas()
 	});
 	
 	this.players = players.map(function(p) {
@@ -129,7 +142,7 @@ GameMaster.prototype.setup = function(generators, players, onGameOver) {
 		
 		//wheelRot: wheelRot,
 		
-		startElem: theGameCanvas,
+		startElem: this.battlefield,
 		stopElem: document.body
 	});
 }
@@ -137,6 +150,8 @@ GameMaster.prototype.setup = function(generators, players, onGameOver) {
 //---------------------
 // Игровой процесс
 //---------------------
+
+// Запуск процесса
 GameMaster.prototype.start = function() {
 	var gm = this;
 	var fps = new FPS(function(fps){ gm.benchmark && console.log(fps) }); // DEBUG
@@ -152,16 +167,26 @@ GameMaster.prototype.start = function() {
 	step();
 }
 
+// Абилки (выполнение)
 GameMaster.prototype.performAbility = function(ability, i, j, player) {
 	if (player && this.currentPlayer() !== player) return false;
 	if (!player && !(this.currentPlayer() instanceof LocalPlayer)) return false;
 	
-	return ability.act(this.map, i, j, this.currentPlayer().color);
-}
+	return ability.act(this, i, j, this.currentPlayer().color);
+};
 GameMaster.prototype.performAbilityReal = function(ability, x, y, player) {
 	return this.performAbility(ability, this.map.x2i(x), this.map.y2j(y), player);
-}
+};
 
+// Абилки (возюканье)
+GameMaster.prototype.hoverAbility = function(ability, i, j, player) {
+	return ability.hover(this, i, j, (player || this.currentPlayer()).color);
+};
+GameMaster.prototype.hoverAbilityReal = function(ability, x, y, player) {
+	return this.hoverAbility(ability, this.map.x2i(x), this.map.y2j(y), player);
+};
+
+// Хождения
 GameMaster.prototype.doTurn = function(i, j, player) {
 	if (player && this.currentPlayer() !== player) return false;
 	if (!player && !(this.currentPlayer() instanceof LocalPlayer)) return false;
@@ -206,6 +231,10 @@ function LocalPlayer(gm, color) {
 	this.gotTurn = function(){};
 	
 	this.loss = function(){};
+	
+	this.toString = function() {
+		return this.constructor.name+"("+this.color+")";
+	}
 }
 
 
@@ -312,4 +341,10 @@ MapConfigProvider.makeSequential = function(providers) {
 	}
 }
 
-
+var Errors = window.Errors || {};
+Errors.playersMismatch = function(a, b) {
+	return new Error("Players "+a+"and "+b+"are different!");
+}
+Errors.playerUnable = function(a, to_what) {
+	return new Error("Player "+a+" is unable to "+to_what);
+}
